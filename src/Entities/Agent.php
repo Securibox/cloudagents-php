@@ -71,34 +71,8 @@ class Agent {
     /** @var DateTime The agent creation date. */
     public $creationDate;
 
-    private static function isAssoc(array $arr)
-    {
-        if (array() === $arr) return false;
-        return array_keys($arr) !== range(0, count($arr) - 1);
-    }
-
-    private static function camelCaseArrayKeys($array){
-        $retArray = array();
-        foreach($array as $key => $item){
-            if(is_object($item) || is_array($item)){
-                $item = Agent::camelCaseArrayKeys($item);
-                if(!Agent::isAssoc($item)){
-                    for($i=0; $i < sizeof($item); $i++){
-                        $item[$i] = (object)$item[$i];
-                    }
-                }
-            }
-            $retArray[lcfirst($key)] = $item;
-        }
-        return $retArray;
-    }
-
     public static function LoadFromJson($jsonData){
-        $jsonData = Utils::camelCaseArrayKeys($jsonData);
-
-        $jsonData = (object)$jsonData;
-
-
+        $jsonData = (object)Utils::camelCaseArrayKeys($jsonData);
         $obj = new Agent();
         $obj->id = $jsonData->id;
         $obj->isEnabled = $jsonData->isEnabled;
