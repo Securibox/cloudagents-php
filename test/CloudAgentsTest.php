@@ -8,12 +8,9 @@ use PHPUnit\Framework\TestCase;
 use Securibox;
 
 class CloudAgentsTest extends TestCase{
-    // private $username = "%Basic_username%";
+    private $username = "%Basic_username%";
 
-    // private $password = "%Basic_password%";
-    private $username = "AssoSynergie";
-
-    private $password = "vgy5DsJj2GXBuQ7D";
+    private $password = "%Basic_password%";
     public function testGetCategories(){
         $client = new Securibox\CloudAgents($this->username, $this->password);
         $resp = $client->getCategories();
