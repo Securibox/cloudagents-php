@@ -1,5 +1,5 @@
 # cloudagents-php
-
+[![Packagist Version][packagist-image]][packagist-url]
 A PHP client library for the [Securibox Cloud Agents API][1]
 
 ## Install Package
@@ -93,3 +93,11 @@ foreach($documents as $document){
 }
 $client->AcknowledgeSynchronizationForAccount($account->customerAccountId, $receivedFiles, array());
 ```
+## License
+[GNU GPL][3]
+
+[1]: https://sca.securibox.eu
+[2]: https://sca.securibox.eu/doc.html
+[3]: https://github.com/Securibox/cloudagents-phpblob/master/LICENSE
+[packagist-image]: https://img.shields.io/badge/packagist-1.0.2-blue.svg
+[packagist-url]: https://packagist.org/packages/securibox/cloudagents
