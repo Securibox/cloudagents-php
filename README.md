@@ -1,5 +1,6 @@
 # cloudagents-php
 [![Packagist Version][packagist-image]][packagist-url]
+
 A PHP client library for the [Securibox Cloud Agents API][1]
 
 ## Install Package
