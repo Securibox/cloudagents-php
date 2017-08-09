@@ -4,17 +4,9 @@ A PHP client library for the [Securibox Cloud Agents API][1]
 
 ## Install Package
 Securibox Cloud Agent PHP wrapper is installed via [Composer](http://getcomposer.org).
-Add these lines to your `composer.json` file:
-```json
-{
-  "require": {
-    "securibox/cloudagents": "1.*"
-  }
-}
-```
-and run
+Simply run the following command:
 ```bash
-composer update
+composer require securibox/cloudagents
 ```
 
 #### Alternative: Install package from zip
@@ -90,7 +82,7 @@ while($synchronization->synchronizationState != "PendingAcknowledgement" &&
 }
 
 //Let's get the newly downloaded documents and save them locally
-$documents = $client->GetDocumentsByAccount($account->customerAccountId, true ,true);
+$documents = $client->GetDocumentsByAccount($account->customerAccountId, 'true','true');
 $receivedFiles = array();
 foreach($documents as $document){
     $file = fopen("C:\\Temp\\".$document->name, "wb");
