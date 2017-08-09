@@ -1,6 +1,6 @@
 <?php
 namespace Securibox;
-require(__DIR__.'/../src/CloudAgents.php');
+require(__DIR__.'/../vendor/autoload.php');
 
 
 
@@ -8,9 +8,9 @@ use PHPUnit\Framework\TestCase;
 use Securibox;
 
 class CloudAgentsTest extends TestCase{
-    private $username = "%Basic_username%";
+    private $username = "AssoSynergie";
 
-    private $password = "%Basic_password%";
+    private $password = "vgy5DsJj2GXBuQ7D";
     public function testGetCategories(){
         $client = new Securibox\CloudAgents($this->username, $this->password);
         $resp = $client->getCategories();

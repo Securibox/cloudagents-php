@@ -15,8 +15,8 @@
         }
     ],
   "autoload": {
-    "psr-0": {
-      "Securibox": "src"
+    "psr-4": {
+      "Securibox\\": "src"
     }
   },
   "require": {

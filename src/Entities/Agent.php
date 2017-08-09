@@ -94,7 +94,7 @@ class Agent {
     }
 
     public static function LoadFromJson($jsonData){
-        $jsonData = Agent::camelCaseArrayKeys($jsonData);
+        $jsonData = Utils::camelCaseArrayKeys($jsonData);
 
         $jsonData = (object)$jsonData;
 

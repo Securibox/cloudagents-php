@@ -27,6 +27,10 @@ class Error {
     public $description;   
 
     public static function LoadFromJson($jsonData){
+        $jsonData = Utils::camelCaseArrayKeys($jsonData);
+
+        $jsonData = (object)$jsonData;
+
         $obj = new Error();
         $obj->code = $jsonData->code;
         $obj->message = $jsonData->message;

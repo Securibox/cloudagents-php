@@ -12,6 +12,7 @@
   */
 
 namespace Securibox;
+//require_once __DIR__."/../vendor/autoload.php";
 require(__DIR__.'/Http/HttpClient.php');
 require(__DIR__.'/Entities/Account.php');
 require(__DIR__.'/Entities/Agent.php');
@@ -20,6 +21,7 @@ require(__DIR__.'/Entities/Category.php');
 require(__DIR__.'/Entities/Credential.php');
 require(__DIR__.'/Entities/Document.php');
 require(__DIR__.'/Entities/Field.php');
+require(__DIR__.'/Entities/Utils.php');
 require(__DIR__.'/Entities/Error.php');    
 require(__DIR__.'/Entities/Synchronization.php');
 
@@ -70,7 +72,7 @@ class CloudAgents
     public function GetAgents($includeLogo = 'false', $culture = 'FR-fr'){
         $response = $this->httpClient->agents()->get(null, array('culture' => $culture, 'includeLogo' => $includeLogo));
         $jsonData = json_decode($response->body());
-        if(isset($jsonData->code)){
+        if(isset($jsonData->code) || isset($jsonData->Code)){
             return  CloudAgents\Entities\Error::LoadFromJson($jsonData);
         }        
         return  CloudAgents\Entities\Agent::LoadFromJsonArray($jsonData);
@@ -505,7 +507,6 @@ class CloudAgents
             'missingDocumentIds' => $missingDocumentIds
         );           
         $response = $this->httpClient->synchronizations()->$customerAccountId()->ack()->put($body);
-        var_dump($response);
         if($response->statusCode() == 200)
             return true;
         $jsonData = json_decode($response->body());
