@@ -5,7 +5,7 @@
   * PHP version 5.4
   *
   * @author    João Rodrigues <joao.rodrigues@securibox.eu>
-  * @copyright 2017 SendGrid
+  * @copyright 2017 Securibox
   * @license   https://opensource.org/licenses/MIT The MIT License
   * @version   GIT: <git_id>
   * @link      http://packagist.org/packages/securibox/cloudagents
