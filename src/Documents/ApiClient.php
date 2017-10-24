@@ -11,24 +11,15 @@
   * @link      http://packagist.org/packages/securibox/cloudagents
   */
 
-namespace Securibox;
-//require_once __DIR__."/../vendor/autoload.php";
-require(__DIR__.'/Http/HttpClient.php');
-require(__DIR__.'/Entities/Account.php');
-require(__DIR__.'/Entities/Agent.php');
-require(__DIR__.'/Entities/AgentLogo.php');    
-require(__DIR__.'/Entities/Category.php');
-require(__DIR__.'/Entities/Credential.php');
-require(__DIR__.'/Entities/Document.php');
-require(__DIR__.'/Entities/Field.php');
-require(__DIR__.'/Entities/Utils.php');
-require(__DIR__.'/Entities/Error.php');    
-require(__DIR__.'/Entities/Synchronization.php');
+namespace Securibox\CloudAgents\Documents;
+require_once __DIR__."/../../vendor/autoload.php";
+use Securibox\CloudAgents\Http;
+use Securibox\CloudAgents\Documents\Entities;
 
 /**
 * Class exposing the Securibox Cloud agent REST API endpoints.
 */
-class CloudAgents
+class ApiClient
 {
     private $httpClient;
 
@@ -39,9 +30,61 @@ class CloudAgents
     * @param array  $password     basic password
     * @param string $apiEndpoint  the base url (e.g. https://sca-multitenant.securibox.eu/api/v1)
     */
-    public function __construct($username, $password, $apiEndpoint = "https://sca-multitenant.securibox.eu/api/v1"){
-        $headers = ['Authorization: basic '.base64_encode($username.':'.$password)]; 
-        $this->httpClient = new Http\Client($apiEndpoint, $headers);
+    public function __construct($httpHeaders, $curlOptions = null, $apiEndpoint = "https://sca-multitenant.securibox.eu/api/v1"){
+        $this->httpClient = new Http\HttpClient($apiEndpoint, $httpHeaders, null, null, $curlOptions);
+    }
+    /**
+    * Initialize the client with basic authentication
+    *
+    * @param string $username     basic username
+    * @param array  $password     basic password
+    * @param string $apiEndpoint  the base url (e.g. https://sca-multitenant.securibox.eu/api/v1)
+    */
+    public static function AuthenticationBasic($username, $password){
+        $headers = ['Authorization: basic '.base64_encode($username.':'.$password)];
+        $instance = new self($headers);
+        return $instance;
+
+    }
+    /**
+    * Initialize the client with SSL client certificate authentication
+    *
+    * @param string $certificateFile        certificate file path (PEM format)
+    * @param array  $certificatePassword    PEM pass phrase
+    * @param string $apiEndpoint            the base url (e.g. https://sca-multitenant.securibox.eu/api/v1)
+    */
+    public static function SslClientCertificate($certificateFile, $certificatePassword){
+        $curlOptions = array(
+            CURLOPT_SSLCERT => $certificateFile ,
+            CURLOPT_SSLCERTPASSWD => $certificatePassword ,            
+        );
+        $instance = new self(null, $curlOptions);
+        return $instance;        
+    }
+    /**
+    * Initialize the client with JSON Web Token authentication
+    *
+    * @param string $username     basic username
+    * @param array  $password     basic password
+    * @param string $apiEndpoint  the base url (e.g. https://sca-multitenant.securibox.eu/api/v1)
+    */
+    public static function Jwt($privateKeyFilePath, $privateKeyPassPhrase){
+        if (\strpos($privateKeyFilePath, 'file://') !== 0) {
+            $privateKeyFilePath = 'file://'.$privateKeyFilePath;
+        }
+
+        $key = new Http\JWT\Key($privateKeyFilePath, $privateKeyPassPhrase);
+
+        $signer = new Http\JWT\Signer\Sha256();
+        $token = (new Http\JWT\Builder())->issuedBy('SCA API SDK')
+                               ->relatedTo('sca-multitenant.securibox.eu')
+                               ->permittedFor('https://sca-multitenant.securibox.eu')
+                               ->issuedAt(time())
+                               ->expiresAt(time() + 3600)
+                               ->getToken($signer, $key);
+        $headers = ['Authorization: bearer '.$token];
+        $instance = new self($headers, null);
+        return $instance;
     }
 
     /**
@@ -55,11 +98,27 @@ class CloudAgents
         $response = $this->httpClient->categories()->get(null, array('culture' => $culture));
         $jsonData = json_decode($response->body());
         if(isset($jsonData->code)){
-            return  CloudAgents\Entities\Error::LoadFromJson($jsonData);
+            return  Entities\Error::LoadFromJson($jsonData);
         }        
-        return CloudAgents\Entities\Category::LoadFromJsonArray($jsonData);
+        return Entities\Category::LoadFromJsonArray($jsonData);
     }
 
+    /**
+    * Lists all available agents.
+    *
+    * @param string $agentIdentifier The agent Guid identifier     
+    *
+    * @return Entities\Agent The agent
+    */
+    public function GetAgent($agentIdentifier){
+
+        $response = $this->httpClient->agents()->$agentIdentifier()->get();
+        $jsonData = json_decode($response->body());
+        if(isset($jsonData->code) || isset($jsonData->Code)){
+            return  Entities\Error::LoadFromJson($jsonData);
+        }        
+        return  Entities\Agent::LoadFromJson($jsonData);
+    }
 
     /**
     * Lists all available agents.
@@ -69,13 +128,13 @@ class CloudAgents
     *
     * @return array[Agent] A list of agents.
     */
-    public function GetAgents($includeLogo = 'false', $culture = 'FR-fr'){
-        $response = $this->httpClient->agents()->get(null, array('culture' => $culture, 'includeLogo' => $includeLogo));
+    public function GetAgents($culture = 'FR-fr'){
+        $response = $this->httpClient->agents()->get(null, array('culture' => $culture));
         $jsonData = json_decode($response->body());
         if(isset($jsonData->code) || isset($jsonData->Code)){
-            return  CloudAgents\Entities\Error::LoadFromJson($jsonData);
+            return  Entities\Error::LoadFromJson($jsonData);
         }        
-        return  CloudAgents\Entities\Agent::LoadFromJsonArray($jsonData);
+        return  Entities\Agent::LoadFromJsonArray($jsonData);
     }
 
 
@@ -100,9 +159,9 @@ class CloudAgents
         $response = $this->httpClient->agents()->search()->get(null, $queryParams);
         $jsonData = json_decode($response->body());
         if(isset($jsonData->code)){
-            return  CloudAgents\Entities\Error::LoadFromJson($jsonData);
+            return  Entities\Error::LoadFromJson($jsonData);
         }        
-        return  CloudAgents\Entities\Agent::LoadFromJsonArray($jsonData);
+        return  Entities\Agent::LoadFromJsonArray($jsonData);
     }
 
     /**
@@ -116,9 +175,9 @@ class CloudAgents
         $response = $this->httpClient->categories()->$categoryId()->agents()->get();
         $jsonData = json_decode($response->body());
         if(isset($jsonData->code)){
-            return  CloudAgents\Entities\Error::LoadFromJson($jsonData);
+            return  Entities\Error::LoadFromJson($jsonData);
         }        
-        return  CloudAgents\Entities\Agent::LoadFromJsonArray($jsonData);
+        return  Entities\Agent::LoadFromJsonArray($jsonData);
     }
 
     /**
@@ -148,9 +207,9 @@ class CloudAgents
         $response = $this->httpClient->accounts()->get(null, $queryParams);
         $jsonData = json_decode($response->body());
         if(isset($jsonData->code)){
-            return  CloudAgents\Entities\Error::LoadFromJson($jsonData);
+            return  Entities\Error::LoadFromJson($jsonData);
         }        
-        return  CloudAgents\Entities\Account::LoadFromJsonArray($jsonData);
+        return  Entities\Account::LoadFromJsonArray($jsonData);
     }
 
     /**
@@ -173,9 +232,9 @@ class CloudAgents
         $response = $this->httpClient->agents()->$agentId()->accounts()->get(null, $queryParams);
         $jsonData = json_decode($response->body());
         if(isset($jsonData->code)){
-            return  CloudAgents\Entities\Error::LoadFromJson($jsonData);
+            return  Entities\Error::LoadFromJson($jsonData);
         }
-        return  CloudAgents\Entities\Account::LoadFromJsonArray($jsonData);
+        return  Entities\Account::LoadFromJsonArray($jsonData);
     }
 
     /**
@@ -189,9 +248,9 @@ class CloudAgents
         $response = $this->httpClient->accounts()->$customerAccountId()->get();
         $jsonData = json_decode($response->body());
         if(isset($jsonData->code)){
-            return  CloudAgents\Entities\Error::LoadFromJson($jsonData);
+            return  Entities\Error::LoadFromJson($jsonData);
         }            
-        return  CloudAgents\Entities\Account::LoadFromJson($jsonData);
+        return  Entities\Account::LoadFromJson($jsonData);
     }
 
     /**
@@ -224,9 +283,9 @@ class CloudAgents
         $response = $this->httpClient->accounts()->post($body);
         $jsonData = json_decode($response->body());
         if(isset($jsonData->code)){
-            return  CloudAgents\Entities\Error::LoadFromJson($jsonData);
+            return  Entities\Error::LoadFromJson($jsonData);
         }            
-        return CloudAgents\Entities\Account::LoadFromJson($jsonData);
+        return Entities\Account::LoadFromJson($jsonData);
     }
 
     /**
@@ -242,9 +301,9 @@ class CloudAgents
         $response = $this->httpClient->accounts()->$accountId()->put($jsonAccount);
         $jsonData = json_decode($response->body());
         if(isset($jsonData->code)){
-            return  CloudAgents\Entities\Error::LoadFromJson($jsonData);
+            return  Entities\Error::LoadFromJson($jsonData);
         }
-        return CloudAgents\Entities\Account::LoadFromJson($jsonData);
+        return Entities\Account::LoadFromJson($jsonData);
     }
 
     /**
@@ -256,7 +315,7 @@ class CloudAgents
     *
     * @return array[Synchronization] A Synchronization object.
     */
-    public function SynchronizeAccount($accountId = null, $userId = null, $isForced = 'false'){
+    public function SynchronizeAccount($accountId = null, $userId = null, $isForced = false){
         if(!isset($accountId) && !isset($userId)){
             throw new Exception("Either the customerAccountId or the customerUserId must be specified.");
         }
@@ -268,17 +327,17 @@ class CloudAgents
             $body['customerUserId'] = $userId;
         }    
         if($isForced){
-            $body['forced'] = true;
+            $body['forced'] = $isForced ? 'true':'false';
         }
         $response = $this->httpClient->accounts()->$accountId()->synchronizations()->post($body);
         $jsonData = json_decode($response->body());
         if(isset($jsonData->code)){
-            return  CloudAgents\Entities\Error::LoadFromJson($jsonData);
+            return  Entities\Error::LoadFromJson($jsonData);
         }
         if(is_array($jsonData)){
-            return  CloudAgents\Entities\Synchronization::LoadFromJsonArray($jsonData);
+            return  Entities\Synchronization::LoadFromJsonArray($jsonData);
         }else{
-            return  CloudAgents\Entities\Synchronization::LoadFromJson($jsonData);
+            return  Entities\Synchronization::LoadFromJson($jsonData);
         }                
     }
 
@@ -309,9 +368,9 @@ class CloudAgents
         $response = $this->httpClient->accounts()->search()->get(null, $queryParams);
         $jsonData = json_decode($response->body());
         if(isset($jsonData->code)){
-            return  CloudAgents\Entities\Error::LoadFromJson($jsonData);
+            return  Entities\Error::LoadFromJson($jsonData);
         }            
-        return CloudAgents\Entities\Account::LoadFromJsonArray($jsonData);              
+        return Entities\Account::LoadFromJsonArray($jsonData);              
     }
 
     /**
@@ -334,9 +393,9 @@ class CloudAgents
         $response = $this->httpClient->accounts()->$customerAccountId()->synchronizations()->get(null, $queryParams);
         $jsonData = json_decode($response->body());
         if(isset($jsonData->code)){
-            return  CloudAgents\Entities\Error::LoadFromJson($jsonData);
+            return  Entities\Error::LoadFromJson($jsonData);
         }
-        return CloudAgents\Entities\Synchronization::LoadFromJsonArray($jsonData);                           
+        return Entities\Synchronization::LoadFromJsonArray($jsonData);                           
     }
 
     /**
@@ -350,9 +409,9 @@ class CloudAgents
         $response = $this->httpClient->accounts()->$accountId()->synchronizations()->last()->get();
         $jsonData = json_decode($response->body());
         if(isset($jsonData->code)){
-            return  CloudAgents\Entities\Error::LoadFromJson($jsonData);
+            return  Entities\Error::LoadFromJson($jsonData);
         }         
-        return CloudAgents\Entities\Synchronization::LoadFromJson($jsonData);                           
+        return Entities\Synchronization::LoadFromJson($jsonData);                           
     }
 
     /**
@@ -390,9 +449,9 @@ class CloudAgents
         $response = $this->httpClient->synchronizations()->search()->get(null, $queryParams);
         $jsonData = json_decode($response->body());
         if(isset($jsonData->code)){
-            return  CloudAgents\Entities\Error::LoadFromJson($jsonData);
+            return  Entities\Error::LoadFromJson($jsonData);
         }            
-        return CloudAgents\Entities\Synchronization::LoadFromJsonArray($jsonData);                           
+        return Entities\Synchronization::LoadFromJsonArray($jsonData);                           
     }
 
     /**
@@ -405,7 +464,7 @@ class CloudAgents
     *
     * @return array[Document] An array of Document object.
     */
-    public function SearchDocuments($customerAccountId = null, $customerUserId = null, $pendingOnly = 'false', $includeContent = 'false'){
+    public function SearchDocuments($customerAccountId = null, $customerUserId = null, $pendingOnly = false, $includeContent = false){
         $queryParams = array();
         if(isset($customerAccountId)){
             $queryParams['customerAccountId'] = $customerAccountId;
@@ -414,17 +473,17 @@ class CloudAgents
             $queryParams['customerUserId'] = $customerUserId;
         }            
         if(isset($pendingOnly)){
-            $queryParams['pendingOnly'] = $pendingOnly;
+            $queryParams['pendingOnly'] = $pendingOnly ? 'true': 'false';
         }
-        if(isset($endDate)){
-            $queryParams['includeContent'] = $includeContent;
-        }            
+        if(isset($includeContent)){
+            $queryParams['includeContent'] = $includeContent ? 'true': 'false';
+        }          
         $response = $this->httpClient->documents()->search()->get(null, $queryParams);
         $jsonData = json_decode($response->body());
         if(isset($jsonData->code)){
-            return  CloudAgents\Entities\Error::LoadFromJson($jsonData);
+            return  Entities\Error::LoadFromJson($jsonData);
         }            
-        return CloudAgents\Entities\Document::LoadFromJsonArray($jsonData);    
+        return Entities\Document::LoadFromJsonArray($jsonData);    
     }          
 
     /**
@@ -435,17 +494,17 @@ class CloudAgents
     *
     * @return Document A Document object.
     */
-    public function GetDocument($documentId, $includeContent = 'false'){
+    public function GetDocument($documentId, $includeContent = false){
         $queryParams = array();
             if(isset($includeContent)){
-            $queryParams['includeContent'] = $includeContent;
+            $queryParams['includeContent'] = $includeContent ? 'true': 'false';
         }            
         $response = $this->httpClient->documents()->$documentId()->get(null, $queryParams);
         $jsonData = json_decode($response->body());
         if(isset($jsonData->code)){
-            return  CloudAgents\Entities\Error::LoadFromJson($jsonData);
+            return  Entities\Error::LoadFromJson($jsonData);
         }            
-        return CloudAgents\Entities\Document::LoadFromJson($jsonData);    
+        return Entities\Document::LoadFromJson($jsonData);    
     }
 
     /**
@@ -457,20 +516,20 @@ class CloudAgents
     *
     * @return array[Document] An array of Document objects.
     */
-    public function GetDocumentsByAccount($customerAccountId, $pendingOnly = 'false', $includeContent = 'false'){
+    public function GetDocumentsByAccount($customerAccountId, $pendingOnly = false, $includeContent = false){
         $queryParams = array();        
         if(isset($pendingOnly)){
-            $queryParams['pendingOnly'] = $pendingOnly;
+            $queryParams['pendingOnly'] = $pendingOnly ? 'true': 'false';
         }
-        if(isset($endDate)){
-            $queryParams['includeContent'] = $includeContent;
+        if(isset($includeContent)){
+            $queryParams['includeContent'] = $includeContent ? 'true': 'false';
         }            
         $response = $this->httpClient->accounts()->$customerAccountId()->documents()->get(null, $queryParams);
         $jsonData = json_decode($response->body());
         if(isset($jsonData->code)){
-            return  CloudAgents\Entities\Error::LoadFromJson($jsonData);
+            return  Entities\Error::LoadFromJson($jsonData);
         }            
-        return CloudAgents\Entities\Document::LoadFromJsonArray($jsonData);    
+        return Entities\Document::LoadFromJsonArray($jsonData);    
     }
 
     /**
@@ -486,7 +545,7 @@ class CloudAgents
             return true;
         $jsonData = json_decode($response->body());
         if(isset($jsonData->code)){
-            return  CloudAgents\Entities\Error::LoadFromJson($jsonData);
+            return  Entities\Error::LoadFromJson($jsonData);
         }
         return false;              
     }
@@ -511,7 +570,7 @@ class CloudAgents
             return true;
         $jsonData = json_decode($response->body());
         if(isset($jsonData->code)){
-            return  CloudAgents\Entities\Error::LoadFromJson($jsonData);
+            return  Entities\Error::LoadFromJson($jsonData);
         }
         return false;              
     }                                          

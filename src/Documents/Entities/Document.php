@@ -11,7 +11,7 @@
   * @link      http://packagist.org/packages/securibox/cloudagents
   */
   
-namespace Securibox\CloudAgents\Entities;
+namespace Securibox\CloudAgents\Documents\Entities;
 /**
  * Object representing a downloaded document.
  */
@@ -74,9 +74,9 @@ class Document {
         $obj->metadatas = $jsonData->metadatas;
         $obj->uniqueIdentifier = $jsonData->uniqueIdentifier;
         $obj->documentProcessPhase = $jsonData->documentProcessPhase;
-        $obj->size = $jsonData->size;
-        $obj->deliveryDate = $jsonData->deliveryDate;
-        $obj->acknowledgementDate = $jsonData->acknowledgementDate;
+        $obj->size = (int)$jsonData->size;
+        $obj->deliveryDate = new \DateTime($jsonData->deliveryDate);
+        $obj->acknowledgementDate = new \DateTime($jsonData->acknowledgementDate);
         $obj->base64Content = $jsonData->base64Content;
         return $obj;
     }

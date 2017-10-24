@@ -11,7 +11,7 @@
   * @link      http://packagist.org/packages/securibox/cloudagents
   */
 
-namespace Securibox\CloudAgents\Entities;
+namespace Securibox\CloudAgents\Documents\Entities;
 /**
  * Object representing an agent field.
  */

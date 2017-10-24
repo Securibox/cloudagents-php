@@ -4,7 +4,7 @@
   "description": "API wrapper for Securibox Cloud Agents.",
   "homepage": "https://github.com/Securibox/cloudagents-php",
   "keywords": ["cloud","agents","connectors","securibox","sca","sbx","cloudagents"],
-  "version": "1.0.2",
+  "version": "1.1.0",
   "license": "GNU GPL",
   "authors": [
         {
@@ -16,7 +16,7 @@
     ],
   "autoload": {
     "psr-4": {
-      "Securibox\\": "src"
+      "Securibox\\CloudAgents\\": "src"
     }
   },
   "require": {
