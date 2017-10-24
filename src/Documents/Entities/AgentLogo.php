@@ -11,7 +11,7 @@
   * @link      http://packagist.org/packages/securibox/cloudagents
   */
 
-namespace Securibox\CloudAgents\Entities;
+namespace Securibox\CloudAgents\Documents\Entities;
 /**
  * Object representing an agent logo.
  */
@@ -34,18 +34,18 @@ class AgentLogo{
     public static function LoadFromJson($jsonData){
         $obj = new AgentLogo();
 
-        if(isset($jsonData->width))
+        if(isset($jsonData['width']))
         {
-            $obj->width = $jsonData->width;
+            $obj->width = $jsonData['width'];
         }
             
-        if(isset($jsonData->width))
+        if(isset($jsonData['height']))
         {
-            $obj->height = $jsonData->height;
+            $obj->height = $jsonData['height'];
         }
-        if(isset($jsonData->url))
+        if(isset($jsonData['url']))
         {
-            $obj->url = $jsonData->url;
+            $obj->url = $jsonData['url'];
         }       
         return $obj;
     }

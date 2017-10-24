@@ -13,14 +13,14 @@
   * @link      http://packagist.org/packages/sendgrid/php-http-client
   */
 
-namespace Securibox\Http;
+namespace Securibox\CloudAgents\Http;
 
 require(__DIR__.'/HttpResponse.php');
 
 /**
   * Quickly and easily access any REST or REST-like API.
   */
-class Client
+class HttpClient
 {
     /** @var string */
     protected $host;
@@ -107,7 +107,7 @@ class Client
         if (isset($name)) {
             $this->path[] = $name;
         }
-        $client = new Client($this->host, $this->headers, $this->version, $this->path, $this->curlOptions);
+        $client = new HttpClient($this->host, $this->headers, $this->version, $this->path, $this->curlOptions);
         $this->path = [];
         return $client;
     }
@@ -190,19 +190,18 @@ class Client
       */
     public function makeRequest($method, $url, $body = null, $headers = null)
     {
-        // echo '-----------------------------------------------\r\n';
-        // echo $method.' '.$url;
-        // echo '-----------------------------------------------\r\n';
         $curl = curl_init($url);
-
-
-        curl_setopt_array($curl, [
+        $curlOptionsTemp = [
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_HEADER => 1,
             CURLOPT_CUSTOMREQUEST => strtoupper($method),
             CURLOPT_SSL_VERIFYPEER => false,
-        ] + $this->curlOptions);
+        ] + $this->curlOptions;
 
+        
+
+        curl_setopt_array($curl, $curlOptionsTemp);
+            
 
         if (isset($headers)) {
             $this->headers = array_merge($this->headers, $headers);
@@ -223,8 +222,8 @@ class Client
 
         $responseHeaders = explode("\n", $responseHeaders);
         $responseHeaders = array_map('trim', $responseHeaders);
-
         curl_close($curl);
+        
 
         return new Response($statusCode, $responseBody, $responseHeaders);
     }

@@ -11,7 +11,7 @@
   * @link      http://packagist.org/packages/securibox/cloudagents
   */
 
-namespace Securibox\CloudAgents\Entities;
+namespace Securibox\CloudAgents\Documents\Entities;
 /**
  * Object representing an account synchronization.
  */
@@ -66,14 +66,14 @@ class Synchronization {
         $obj = new Synchronization();
         $obj->id = $jsonData->accountId;
         $obj->customerAccountId = $jsonData->customerAccountId;
-        $obj->isForced = $jsonData->isForced;
-        $obj->downloadedDocs = $jsonData->downloadedDocs;
-        $obj->detectedDocs = $jsonData->detectedDocs;
-        $obj->creationDate = $jsonData->creationDate;
-        $obj->startDate = $jsonData->startDate;
-        $obj->endDate = $jsonData->endDate;
-        $obj->deliveryDate = $jsonData->deliveryDate;
-        $obj->acknowledgementDate = $jsonData->acknowledgementDate;
+        $obj->isForced = (bool)$jsonData->isForced;
+        $obj->downloadedDocs = (int)$jsonData->downloadedDocs;
+        $obj->detectedDocs = (int)$jsonData->detectedDocs;
+        $obj->creationDate = new \DateTime($jsonData->creationDate);
+        $obj->startDate = new \DateTime($jsonData->startDate);
+        $obj->endDate = new \DateTime($jsonData->endDate);
+        $obj->deliveryDate = new \DateTime($jsonData->deliveryDate);
+        $obj->acknowledgementDate = new \DateTime($jsonData->acknowledgementDate);
         $obj->synchronizationState = Synchronization::synchronizationStateFromInt($jsonData->synchronizationState);
         $obj->synchronizationStateDetails = Synchronization::synchronizationStateDetailsFromInt($jsonData->synchronizationStateDetails);
         $obj->synchronizationMode = $jsonData->synchronizationMode;

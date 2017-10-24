@@ -13,7 +13,7 @@
  * @link      http://packagist.org/packages/sendgrid/php-http-client
  */
 
-namespace Securibox\Http;
+namespace Securibox\CloudAgents\Http;
 
 /**
  * Holds the response from an API call.

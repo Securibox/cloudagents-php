@@ -11,7 +11,7 @@
   * @link      http://packagist.org/packages/securibox/cloudagents
   */
 
-namespace Securibox\CloudAgents\Entities;
+namespace Securibox\CloudAgents\Documents\Entities;
 /**
  * Object representing an agent.
  */
@@ -90,7 +90,7 @@ class Agent {
         $obj->url = $jsonData->url;
         $obj->documentTypes = $jsonData->documentTypes;
         $obj->fields = Field::LoadFromJsonArray($jsonData->fields);
-        $obj->creationDate = $jsonData->creationDate;
+        $obj->creationDate = new \DateTime($jsonData->creationDate);
         return $obj;
     }
 

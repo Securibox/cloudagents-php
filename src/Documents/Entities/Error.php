@@ -11,16 +11,16 @@
   * @link      http://packagist.org/packages/securibox/cloudagents
   */
 
-namespace Securibox\CloudAgents\Entities;
+namespace Securibox\CloudAgents\Documents\Entities;
 /**
  * Object representing an agent field.
  */
 class Error {
 
-    /** @var string The error code. */
+    /** @var int The error code. */
     public $code;
 
-    /** @var int32 The error message. */
+    /** @var string The error message. */
     public $message;
 
     /** @var string The detailed description of the error  */
