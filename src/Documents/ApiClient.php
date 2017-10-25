@@ -40,9 +40,9 @@ class ApiClient
     * @param array  $password     basic password
     * @param string $apiEndpoint  the base url (e.g. https://sca-multitenant.securibox.eu/api/v1)
     */
-    public static function AuthenticationBasic($username, $password){
+    public static function AuthenticationBasic($username, $password, $apiEndpoint = "https://sca-multitenant.securibox.eu/api/v1"){
         $headers = ['Authorization: basic '.base64_encode($username.':'.$password)];
-        $instance = new self($headers);
+        $instance = new self($headers, null, $apiEndpoint);
         return $instance;
 
     }
@@ -53,12 +53,15 @@ class ApiClient
     * @param array  $certificatePassword    PEM pass phrase
     * @param string $apiEndpoint            the base url (e.g. https://sca-multitenant.securibox.eu/api/v1)
     */
-    public static function SslClientCertificate($certificateFile, $certificatePassword){
+    public static function SslClientCertificate($certificateFile, $certificatePassword, $apiEndpoint = "https://sca-multitenant.securibox.eu/api/v1"){
+
         $curlOptions = array(
-            CURLOPT_SSLCERT => $certificateFile ,
-            CURLOPT_SSLCERTPASSWD => $certificatePassword ,            
+            CURLOPT_SSLCERT => $certificateFile           
         );
-        $instance = new self(null, $curlOptions);
+        if(isset($certificatePassword)){
+            $curlOptions = [CURLOPT_SSLCERTPASSWD => $certificatePassword] + $curlOptions;
+        }
+        $instance = new self(null, $curlOptions, $apiEndpoint);
         return $instance;        
     }
     /**
@@ -68,12 +71,12 @@ class ApiClient
     * @param array  $password     basic password
     * @param string $apiEndpoint  the base url (e.g. https://sca-multitenant.securibox.eu/api/v1)
     */
-    public static function Jwt($privateKeyFilePath, $privateKeyPassPhrase){
+    public static function Jwt($privateKeyFilePath, $privateKeyPassPhrase, $apiEndpoint = "https://sca-multitenant.securibox.eu/api/v1"){
         if (\strpos($privateKeyFilePath, 'file://') !== 0) {
             $privateKeyFilePath = 'file://'.$privateKeyFilePath;
         }
 
-        $key = new Http\JWT\Key($privateKeyFilePath, $privateKeyPassPhrase);
+        $key = new Http\JWT\Key($privateKeyFilePath, $privateKeyPassPhrase, $apiEndpoint);
 
         $signer = new Http\JWT\Signer\Sha256();
         $token = (new Http\JWT\Builder())->issuedBy('SCA API SDK')

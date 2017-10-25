@@ -131,6 +131,9 @@ class HttpClient
     /** The same as curl_exec except tries its best to convert the output to utf8 **/
     public function curl_exec_utf8($ch) {
         $data = curl_exec($ch);
+        if($data === false){
+            throw new \Exception(curl_error($ch));
+        }
         if (!is_string($data)) return $data;
 
         unset($charset);
@@ -199,10 +202,9 @@ class HttpClient
         ] + $this->curlOptions;
 
         
-
+        
         curl_setopt_array($curl, $curlOptionsTemp);
             
-
         if (isset($headers)) {
             $this->headers = array_merge($this->headers, $headers);
         }
@@ -214,9 +216,10 @@ class HttpClient
         curl_setopt($curl, CURLOPT_HTTPHEADER, $this->headers);
 
         $response = $this->curl_exec_utf8($curl);
+        
         $headerSize = curl_getinfo($curl, CURLINFO_HEADER_SIZE);
         $statusCode = curl_getinfo($curl, CURLINFO_HTTP_CODE);
-
+        
         $responseBody = substr($response, $headerSize);
         $responseHeaders = substr($response, 0, $headerSize);
 
