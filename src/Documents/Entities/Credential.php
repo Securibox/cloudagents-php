@@ -7,7 +7,7 @@
   * @author    João Rodrigues <joao.rodrigues@securibox.eu>
   * @copyright 2017 Securibox
   * @license   https://opensource.org/licenses/MIT The MIT License
-  * @version   GIT: <git_id>
+  * @version   GIT: https://github.com/Securibox/cloudagents-php
   * @link      http://packagist.org/packages/securibox/cloudagents
   */
 

@@ -12,7 +12,7 @@ class CloudAgentsTestSslClient extends TestCase{
     private $certificateSecret = 'PEM pass phrase';
     
     public function testGetCategories(){
-        $client = ApiClient::SslClientCertificate($this->certificateFilePath, $this->certificateSecret);
+        $client = ApiClient::SslClientCertificate($this->certificateFilePath, $this->certificateSecret, "https://sca-multitenant.securibox.eu/api/v1");
         $resp = $client->getCategories();
         $this->assertGreaterThan(0, sizeof($resp));
         $this->assertInstanceOf(Entities\Category::class, $resp[0]);
@@ -21,8 +21,6 @@ class CloudAgentsTestSslClient extends TestCase{
         $this->assertObjectHasAttribute('description', $resp[0]);
         var_dump($resp);
     }
-
-    
 
     public function testGetAgents(){
         $client = ApiClient::SslClientCertificate($this->certificateFilePath, $this->certificateSecret);
