@@ -219,7 +219,7 @@ class HttpClient
         
         $headerSize = curl_getinfo($curl, CURLINFO_HEADER_SIZE);
         $statusCode = curl_getinfo($curl, CURLINFO_HTTP_CODE);
-        
+
         $responseBody = substr($response, $headerSize);
         $responseHeaders = substr($response, 0, $headerSize);
 
