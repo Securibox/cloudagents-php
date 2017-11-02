@@ -10,6 +10,7 @@ class CloudAgentsTestBasic extends TestCase{
     private $username = "%Basic_username%";
     private $password = "%Basic_password%"; 
 
+
     public function testGetCategories(){
         $client = ApiClient::AuthenticationBasic($this->username, $this->password);
         $resp = $client->getCategories();
@@ -73,22 +74,18 @@ class CloudAgentsTestBasic extends TestCase{
         $account->customerUserId = 'User123';
         $account->name = 'Compte de tests 1';
         $account->credentials = array();
-
         $username = new Entities\Credential();
         $username->position = 0;
         $username->value = 'username@bbox.fr';
-
         $password = new Entities\Credential();
         $password->position = 1;
         $password->value = 'motdepasse';
-
         array_push($account->credentials, $username, $password);
-
         $client = ApiClient::AuthenticationBasic($this->username, $this->password);
         $resp = $client->CreateAccount($account);
         $this->assertInstanceOf(Entities\Account::class, $resp);
         $this->assertEquals($account->customerAccountId, $resp->customerAccountId);
-        var_dump($resp);               
+        var_dump($resp);              
     }
 
 
@@ -135,7 +132,7 @@ class CloudAgentsTestBasic extends TestCase{
         var_dump($resp);    
     }
 
-    public function testModifyAccount(){        
+    public function testModifyAccount(){
         $client = ApiClient::AuthenticationBasic($this->username, $this->password);
         $account = $client->GetAccount('c');
         $account->name = $account->name.'_2';

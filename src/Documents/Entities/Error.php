@@ -26,11 +26,18 @@ class Error {
     /** @var string The detailed description of the error  */
     public $description;   
 
-    public static function LoadFromJson($jsonData){
+    public static function LoadFromJson($jsonData, $statusCode){
         $jsonData = Utils::camelCaseArrayKeys($jsonData);
 
-        $jsonData = (object)$jsonData;
+        if(is_string($jsonData)){
+            $obj = new Error();
+            $obj->code = $statusCode;
+            $obj->message = $jsonData;
+            $obj->description = $jsonData;
+            return $obj;
+        }
 
+        $jsonData = (object)$jsonData;
         $obj = new Error();
         $obj->code = $jsonData->code;
         $obj->message = $jsonData->message;
