@@ -100,7 +100,7 @@ class ApiClient
         $response = $this->httpClient->categories()->get(null, array('culture' => $culture));
         $jsonData = json_decode($response->body());
         if($response->statusCode() >= 400){
-            return  Entities\Error::LoadFromJson($jsonData);
+            return  Entities\Error::LoadFromJson($jsonData, $response->statusCode());
         }
         return Entities\Category::LoadFromJsonArray($jsonData);
     }
@@ -116,7 +116,7 @@ class ApiClient
         $response = $this->httpClient->agents()->$agentIdentifier()->get();
         $jsonData = json_decode($response->body());
         if($response->statusCode() >= 400){
-            return  Entities\Error::LoadFromJson($jsonData);
+            return  Entities\Error::LoadFromJson($jsonData, $response->statusCode());
         }      
         return  Entities\Agent::LoadFromJson($jsonData);
     }
@@ -133,7 +133,7 @@ class ApiClient
         $response = $this->httpClient->agents()->get(null, array('culture' => $culture));
         $jsonData = json_decode($response->body());
         if($response->statusCode() >= 400){
-            return  Entities\Error::LoadFromJson($jsonData);
+            return  Entities\Error::LoadFromJson($jsonData, $response->statusCode());
         }      
         return  Entities\Agent::LoadFromJsonArray($jsonData);
     }
@@ -160,7 +160,7 @@ class ApiClient
         $response = $this->httpClient->agents()->search()->get(null, $queryParams);
         $jsonData = json_decode($response->body());
         if($response->statusCode() >= 400){
-            return  Entities\Error::LoadFromJson($jsonData);
+            return  Entities\Error::LoadFromJson($jsonData, $response->statusCode());
         }         
         return  Entities\Agent::LoadFromJsonArray($jsonData);
     }
@@ -176,7 +176,7 @@ class ApiClient
         $response = $this->httpClient->categories()->$categoryId()->agents()->get();
         $jsonData = json_decode($response->body());
         if($response->statusCode() >= 400){
-            return  Entities\Error::LoadFromJson($jsonData);
+            return  Entities\Error::LoadFromJson($jsonData, $response->statusCode());
         }           
         return  Entities\Agent::LoadFromJsonArray($jsonData);
     }
@@ -208,7 +208,7 @@ class ApiClient
         $response = $this->httpClient->accounts()->get(null, $queryParams);
         $jsonData = json_decode($response->body());
         if($response->statusCode() >= 400){
-            return  Entities\Error::LoadFromJson($jsonData);
+            return  Entities\Error::LoadFromJson($jsonData, $response->statusCode());
         }        
         return  Entities\Account::LoadFromJsonArray($jsonData);
     }
@@ -233,7 +233,7 @@ class ApiClient
         $response = $this->httpClient->agents()->$agentId()->accounts()->get(null, $queryParams);
         $jsonData = json_decode($response->body());
         if($response->statusCode() >= 400){
-            return  Entities\Error::LoadFromJson($jsonData);
+            return  Entities\Error::LoadFromJson($jsonData, $response->statusCode());
         }   
         return  Entities\Account::LoadFromJsonArray($jsonData);
     }
@@ -249,7 +249,7 @@ class ApiClient
         $response = $this->httpClient->accounts()->$customerAccountId()->get();
         $jsonData = json_decode($response->body());
         if($response->statusCode() >= 400){
-            return  Entities\Error::LoadFromJson($jsonData);
+            return  Entities\Error::LoadFromJson($jsonData, $response->statusCode());
         }             
         return  Entities\Account::LoadFromJson($jsonData);
     }
@@ -284,7 +284,7 @@ class ApiClient
         $response = $this->httpClient->accounts()->post($body);
         $jsonData = json_decode($response->body());
         if($response->statusCode() >= 400){
-            return  Entities\Error::LoadFromJson($jsonData);
+            return  Entities\Error::LoadFromJson($jsonData, $response->statusCode());
         }              
         return Entities\Account::LoadFromJson($jsonData);
     }
@@ -298,11 +298,10 @@ class ApiClient
     * @return Account An account.
     */
     public function ModifyAccount($accountId, $updatedAccount){
-        $jsonAccount = json_encode($updatedAccount);
-        $response = $this->httpClient->accounts()->$accountId()->put($jsonAccount);
+        $response = $this->httpClient->accounts()->$accountId()->put($updatedAccount);
         $jsonData = json_decode($response->body());
         if($response->statusCode() >= 400){
-            return  Entities\Error::LoadFromJson($jsonData);
+            return  Entities\Error::LoadFromJson($jsonData, $response->statusCode());
         }   
         return Entities\Account::LoadFromJson($jsonData);
     }
@@ -333,7 +332,7 @@ class ApiClient
         $response = $this->httpClient->accounts()->$accountId()->synchronizations()->post($body);
         $jsonData = json_decode($response->body());
         if($response->statusCode() >= 400){
-            return  Entities\Error::LoadFromJson($jsonData);
+            return  Entities\Error::LoadFromJson($jsonData, $response->statusCode());
         }   
         if(is_array($jsonData)){
             return  Entities\Synchronization::LoadFromJsonArray($jsonData);
@@ -369,7 +368,7 @@ class ApiClient
         $response = $this->httpClient->accounts()->search()->get(null, $queryParams);
         $jsonData = json_decode($response->body());
         if($response->statusCode() >= 400){
-            return  Entities\Error::LoadFromJson($jsonData);
+            return  Entities\Error::LoadFromJson($jsonData, $response->statusCode());
         }              
         return Entities\Account::LoadFromJsonArray($jsonData);              
     }
@@ -394,7 +393,7 @@ class ApiClient
         $response = $this->httpClient->accounts()->$customerAccountId()->synchronizations()->get(null, $queryParams);
         $jsonData = json_decode($response->body());
         if($response->statusCode() >= 400){
-            return  Entities\Error::LoadFromJson($jsonData);
+            return  Entities\Error::LoadFromJson($jsonData, $response->statusCode());
         }   
         return Entities\Synchronization::LoadFromJsonArray($jsonData);                           
     }
@@ -410,7 +409,7 @@ class ApiClient
         $response = $this->httpClient->accounts()->$accountId()->synchronizations()->last()->get();
         $jsonData = json_decode($response->body());
         if($response->statusCode() >= 400){
-            return  Entities\Error::LoadFromJson($jsonData);
+            return  Entities\Error::LoadFromJson($jsonData, $response->statusCode());
         }          
         return Entities\Synchronization::LoadFromJson($jsonData);                           
     }
@@ -450,7 +449,7 @@ class ApiClient
         $response = $this->httpClient->synchronizations()->search()->get(null, $queryParams);
         $jsonData = json_decode($response->body());
         if($response->statusCode() >= 400){
-            return  Entities\Error::LoadFromJson($jsonData);
+            return  Entities\Error::LoadFromJson($jsonData, $response->statusCode());
         }             
         return Entities\Synchronization::LoadFromJsonArray($jsonData);                           
     }
@@ -482,7 +481,7 @@ class ApiClient
         $response = $this->httpClient->documents()->search()->get(null, $queryParams);
         $jsonData = json_decode($response->body());
         if($response->statusCode() >= 400){
-            return  Entities\Error::LoadFromJson($jsonData);
+            return  Entities\Error::LoadFromJson($jsonData, $response->statusCode());
         }             
         return Entities\Document::LoadFromJsonArray($jsonData);    
     }          
@@ -503,7 +502,7 @@ class ApiClient
         $response = $this->httpClient->documents()->$documentId()->get(null, $queryParams);
         $jsonData = json_decode($response->body());
         if($response->statusCode() >= 400){
-            return  Entities\Error::LoadFromJson($jsonData);
+            return  Entities\Error::LoadFromJson($jsonData, $response->statusCode());
         }           
         return Entities\Document::LoadFromJson($jsonData);    
     }
@@ -528,7 +527,7 @@ class ApiClient
         $response = $this->httpClient->accounts()->$customerAccountId()->documents()->get(null, $queryParams);
         $jsonData = json_decode($response->body());
         if($response->statusCode() >= 400){
-            return  Entities\Error::LoadFromJson($jsonData);
+            return  Entities\Error::LoadFromJson($jsonData, $response->statusCode());
         }             
         return Entities\Document::LoadFromJsonArray($jsonData);    
     }
@@ -546,7 +545,7 @@ class ApiClient
             return true;
         $jsonData = json_decode($response->body());
         if($response->statusCode() >= 400){
-            return  Entities\Error::LoadFromJson($jsonData);
+            return  Entities\Error::LoadFromJson($jsonData, $response->statusCode());
         }   
         return false;              
     }
@@ -571,7 +570,7 @@ class ApiClient
             return true;
         $jsonData = json_decode($response->body());
         if($response->statusCode() >= 400){
-            return  Entities\Error::LoadFromJson($jsonData);
+            return  Entities\Error::LoadFromJson($jsonData, $response->statusCode());
         }   
         return false;              
     }                                          

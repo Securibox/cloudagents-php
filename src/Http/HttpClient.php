@@ -197,11 +197,12 @@ class HttpClient
         $curlOptionsTemp = [
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_HEADER => 1,
+            CURLOPT_FRESH_CONNECT => true,
             CURLOPT_CUSTOMREQUEST => strtoupper($method),
             CURLOPT_SSL_VERIFYPEER => false,
+            // CURLOPT_VERBOSE => true,
+            // CURLOPT_STDERR => fopen('php://stderr', 'w')
         ] + $this->curlOptions;
-
-        
         
         curl_setopt_array($curl, $curlOptionsTemp);
             
@@ -213,10 +214,10 @@ class HttpClient
             curl_setopt($curl, CURLOPT_POSTFIELDS, $encodedBody);
             $this->headers = array_merge($this->headers, ['Content-Type: application/json; charset=UTF-8']);
         }
-        curl_setopt($curl, CURLOPT_HTTPHEADER, $this->headers);
-
-        $response = $this->curl_exec_utf8($curl);
         
+        curl_setopt($curl, CURLOPT_HTTPHEADER, $this->headers);
+        $response = $this->curl_exec_utf8($curl);
+
         $headerSize = curl_getinfo($curl, CURLINFO_HEADER_SIZE);
         $statusCode = curl_getinfo($curl, CURLINFO_HTTP_CODE);
 
