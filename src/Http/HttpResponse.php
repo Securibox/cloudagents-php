@@ -18,7 +18,7 @@ namespace Securibox\CloudAgents\Http;
 /**
  * Holds the response from an API call.
  */
-class Response
+class HttpResponse
 {
     /** @var int */
     protected $statusCode;

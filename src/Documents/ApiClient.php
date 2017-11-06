@@ -12,7 +12,6 @@
   */
 
 namespace Securibox\CloudAgents\Documents;
-require_once __DIR__."\\..\\..\\vendor\\autoload.php";
 use Securibox\CloudAgents\Http;
 use Securibox\CloudAgents\Documents\Entities;
 
