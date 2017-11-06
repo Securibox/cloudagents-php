@@ -22,6 +22,17 @@ class CloudAgentsTestSslClient extends TestCase{
         var_dump($resp);
     }
 
+    public function testGetSingleAgent(){
+        $client = ApiClient::SslClientCertificate($this->certificateFilePath, $this->certificateSecret);
+        $resp = $client->GetAgent('d02a3ace21d6439eb9ff2b0138868eb8');
+        var_dump($resp->logos);
+        $this->assertInstanceOf(Entities\Agent::class, $resp);
+        $this->assertObjectHasAttribute('id', $resp);
+        $this->assertObjectHasAttribute('name', $resp);
+        $this->assertObjectHasAttribute('description', $resp);
+        var_dump($resp);
+    }   
+
     public function testGetAgents(){
         $client = ApiClient::SslClientCertificate($this->certificateFilePath, $this->certificateSecret);
         $resp = $client->GetAgents();
@@ -75,7 +86,7 @@ class CloudAgentsTestSslClient extends TestCase{
 
         array_push($account->credentials, $username, $password);
 
-        $client = ApiClient::Jwt($this->privateKeyFilePath, $this->privateKeyPassPhrase);
+        $client = ApiClient::SslClientCertificate($this->certificateFilePath, $this->certificateSecret);
         $resp = $client->CreateAccount($account);
         $this->assertInstanceOf(Entities\Account::class, $resp);
         $this->assertEquals($account->customerAccountId, $resp->customerAccountId);
@@ -85,7 +96,7 @@ class CloudAgentsTestSslClient extends TestCase{
 
 
     public function testGetAllAccounts(){
-        $client = ApiClient::Jwt($this->privateKeyFilePath, $this->privateKeyPassPhrase);
+        $client = ApiClient::SslClientCertificate($this->certificateFilePath, $this->certificateSecret);
         $resp = $client->GetAllAccounts();
         $this->assertGreaterThan(0, sizeof($resp));
         $this->assertInstanceOf(Entities\Account::class, $resp[0]);
@@ -94,7 +105,7 @@ class CloudAgentsTestSslClient extends TestCase{
     }
 
     public function testGetAccountsByAgent(){
-        $client = ApiClient::Jwt($this->privateKeyFilePath, $this->privateKeyPassPhrase);
+        $client = ApiClient::SslClientCertificate($this->certificateFilePath, $this->certificateSecret);
         $resp = $client->GetAccountsByAgent('c42f0150d2eb47ee8fa56bce25e49b8d');
         $this->assertGreaterThan(0, sizeof($resp));
         $this->assertInstanceOf(Entities\Account::class, $resp[0]);
@@ -104,7 +115,7 @@ class CloudAgentsTestSslClient extends TestCase{
     }
 
     public function testGetAccount(){
-        $client = ApiClient::Jwt($this->privateKeyFilePath, $this->privateKeyPassPhrase);
+        $client = ApiClient::SslClientCertificate($this->certificateFilePath, $this->certificateSecret);
         $resp = $client->GetAccount('Account201708082');
         $this->assertInstanceOf(Entities\Account::class, $resp);
         $this->assertEquals('c42f0150d2eb47ee8fa56bce25e49b8d', $resp->agentId);     
@@ -112,13 +123,13 @@ class CloudAgentsTestSslClient extends TestCase{
         var_dump($resp);          
     }
     public function testGetUnexistingAccount(){
-        $client = ApiClient::Jwt($this->privateKeyFilePath, $this->privateKeyPassPhrase);
+        $client = ApiClient::SslClientCertificate($this->certificateFilePath, $this->certificateSecret);
         $resp = $client->GetAccount('#ID_Does_not_exist');
         $this->assertInstanceOf(Entities\Error::class, $resp);
         var_dump($resp);       
     }
     public function testSearchAccounts(){
-        $client = ApiClient::Jwt($this->privateKeyFilePath, $this->privateKeyPassPhrase);
+        $client = ApiClient::SslClientCertificate($this->certificateFilePath, $this->certificateSecret);
         $resp = $client->SearchAccounts(null, 'User1');
         $this->assertGreaterThan(0, sizeof($resp));
         $this->assertInstanceOf(Entities\Account::class, $resp[0]);
@@ -127,7 +138,7 @@ class CloudAgentsTestSslClient extends TestCase{
     }
 
     public function testModifyAccount(){        
-        $client = ApiClient::Jwt($this->privateKeyFilePath, $this->privateKeyPassPhrase);
+        $client = ApiClient::SslClientCertificate($this->certificateFilePath, $this->certificateSecret);
         $account = $client->GetAccount('c');
         $account->name = $account->name.'_2';
         $resp = $client->ModifyAccount('Account_Id', $account);
@@ -138,28 +149,28 @@ class CloudAgentsTestSslClient extends TestCase{
 
 
     public function testDeleteAccount(){
-        $client = ApiClient::Jwt($this->privateKeyFilePath, $this->privateKeyPassPhrase);
+        $client = ApiClient::SslClientCertificate($this->certificateFilePath, $this->certificateSecret);
         $resp = $client->DeleteAccount('Account_Id');
         $this->assertEquals(true, $resp);    
     }
 
     public function testSynchronizeAccount(){
         $accountId = 'Account_Id';
-        $client = ApiClient::Jwt($this->privateKeyFilePath, $this->privateKeyPassPhrase);
+        $client = ApiClient::SslClientCertificate($this->certificateFilePath, $this->certificateSecret);
         $resp = $client->SynchronizeAccount($accountId, null, true);
         $this->assertInstanceOf(Entities\Synchronization::class, $resp);
         $this->assertEquals($accountId, $resp->customerAccountId);    
     }
 
     public function testSynchronizeUnexistingAccount(){
-        $client = ApiClient::Jwt($this->privateKeyFilePath, $this->privateKeyPassPhrase);
+        $client = ApiClient::SslClientCertificate($this->certificateFilePath, $this->certificateSecret);
         $resp = $client->SynchronizeAccount('Account_Id', null, true);        
         $this->assertInstanceOf(Entities\Error::class, $resp);
         var_dump($resp);
     }
 
     public function testGetSynchronizationsByAccount(){
-        $client = ApiClient::Jwt($this->privateKeyFilePath, $this->privateKeyPassPhrase);
+        $client = ApiClient::SslClientCertificate($this->certificateFilePath, $this->certificateSecret);
         $resp = $client->GetSynchronizationsByAccount('Account_Id');
         $this->assertGreaterThan(0, sizeof($resp));
         $this->assertInstanceOf(Entities\Synchronization::class, $resp[0]);
@@ -169,7 +180,7 @@ class CloudAgentsTestSslClient extends TestCase{
 
     public function testGetLastSynchronizationByAccount(){
         $accountId = 'Account_Id';
-        $client = ApiClient::Jwt($this->privateKeyFilePath, $this->privateKeyPassPhrase);
+        $client = ApiClient::SslClientCertificate($this->certificateFilePath, $this->certificateSecret);
         $resp = $client->GetLastSynchronizationByAccount($accountId);
         $this->assertInstanceOf(Entities\Synchronization::class, $resp);
         $this->assertEquals($accountId, $resp->customerAccountId);
@@ -178,7 +189,7 @@ class CloudAgentsTestSslClient extends TestCase{
 
     public function testSearchSynchronizations(){
         $accountId = 'Account_Id';
-        $client = ApiClient::Jwt($this->privateKeyFilePath, $this->privateKeyPassPhrase);
+        $client = ApiClient::SslClientCertificate($this->certificateFilePath, $this->certificateSecret);
         $resp = $client->SearchSynchronizations(null, 'Account_Id');
         $this->assertInstanceOf(Entities\Synchronization::class, $resp[0]);
         $this->assertEquals($accountId, $resp[0]->customerAccountId);
@@ -187,7 +198,7 @@ class CloudAgentsTestSslClient extends TestCase{
 
     public function testSearchDocumentsByAccountId(){
         $accountId = 'Account_Id';
-        $client = ApiClient::Jwt($this->privateKeyFilePath, $this->privateKeyPassPhrase);
+        $client = ApiClient::SslClientCertificate($this->certificateFilePath, $this->certificateSecret);
         $resp = $client->SearchDocuments($accountId);
         $this->assertInstanceOf(Entities\Document::class, $resp[0]);
         $this->assertEquals($accountId, $resp[0]->customerAccountId);
@@ -195,14 +206,14 @@ class CloudAgentsTestSslClient extends TestCase{
     }
     public function testSearchDocumentsByUserId(){
         $userId = 'User123';
-        $client = ApiClient::Jwt($this->privateKeyFilePath, $this->privateKeyPassPhrase);
+        $client = ApiClient::SslClientCertificate($this->certificateFilePath, $this->certificateSecret);
         $resp = $client->SearchDocuments(null, $userId);
         $this->assertInstanceOf(Entities\Document::class, $resp[0]);
         var_dump($resp);   
     }
     public function testGetDocumentWithoutContent(){
         $documentId = '00001';
-        $client = ApiClient::Jwt($this->privateKeyFilePath, $this->privateKeyPassPhrase);
+        $client = ApiClient::SslClientCertificate($this->certificateFilePath, $this->certificateSecret);
         $resp = $client->GetDocument($documentId);
         $this->assertInstanceOf(Entities\Document::class, $resp);
         $this->assertEquals($documentId, $resp->id);
@@ -210,7 +221,7 @@ class CloudAgentsTestSslClient extends TestCase{
     }
     public function testGetDocumentWithContent(){
         $documentId = '00001';
-        $client = ApiClient::Jwt($this->privateKeyFilePath, $this->privateKeyPassPhrase);
+        $client = ApiClient::SslClientCertificate($this->certificateFilePath, $this->certificateSecret);
         $resp = $client->GetDocument($documentId, 'true');
         $this->assertInstanceOf(Entities\Document::class, $resp);
         $this->assertNotNull($resp->base64Content);
@@ -219,7 +230,7 @@ class CloudAgentsTestSslClient extends TestCase{
 
     public function testGetDocumentsByAccount(){
         $accountId = 'Account_Id';
-        $client = ApiClient::Jwt($this->privateKeyFilePath, $this->privateKeyPassPhrase);
+        $client = ApiClient::SslClientCertificate($this->certificateFilePath, $this->certificateSecret);
         $resp = $client->GetDocumentsByAccount($accountId);
         $this->assertInstanceOf(Entities\Document::class, $resp[0]);
         $this->assertEquals($accountId, $resp[0]->customerAccountId);
@@ -228,14 +239,14 @@ class CloudAgentsTestSslClient extends TestCase{
 
     public function testAcknowledgeDocumentDelivery(){
         $documentId = '00001';
-        $client = ApiClient::Jwt($this->privateKeyFilePath, $this->privateKeyPassPhrase);
+        $client = ApiClient::SslClientCertificate($this->certificateFilePath, $this->certificateSecret);
         $resp = $client->AcknowledgeDocumentDelivery($documentId);
         $this->assertEquals(true, $resp);
     }
 
     public function testAcknowledgeSynchronizationForAccount(){
         $accountId = 'Account_Id';
-        $client = ApiClient::Jwt($this->privateKeyFilePath, $this->privateKeyPassPhrase);
+        $client = ApiClient::SslClientCertificate($this->certificateFilePath, $this->certificateSecret);
         $resp = $client->AcknowledgeSynchronizationForAccount($accountId);
         $this->assertEquals(true, $resp);      
     }                        

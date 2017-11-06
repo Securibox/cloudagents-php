@@ -15,8 +15,6 @@
 
 namespace Securibox\CloudAgents\Http;
 
-require(__DIR__.'/HttpResponse.php');
-
 /**
   * Quickly and easily access any REST or REST-like API.
   */
@@ -229,7 +227,7 @@ class HttpClient
         curl_close($curl);
         
 
-        return new Response($statusCode, $responseBody, $responseHeaders);
+        return new HttpResponse($statusCode, $responseBody, $responseHeaders);
     }
 
 

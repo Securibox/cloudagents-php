@@ -61,6 +61,7 @@ class AgentLogo{
 
     public static function LoadFromAssociativeArray($jsonObjects){
         $agentLogos = array();
+        $jsonObjects = json_decode(json_encode($jsonObjects), true);
         foreach ($jsonObjects as $key => $value) {
             $agentLogos[$key] = AgentLogo::LoadFromJson($value);
         }

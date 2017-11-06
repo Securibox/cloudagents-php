@@ -24,7 +24,7 @@ class Utils{
     }
 
     public static function camelCaseArrayKeys($array){
-        if(!is_array($array)){
+        if(!is_array($array) && !is_object($array)){
             return $array;
         }
         $retArray = array();

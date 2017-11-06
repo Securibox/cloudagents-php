@@ -27,8 +27,6 @@ class Error {
     public $description;   
 
     public static function LoadFromJson($jsonData, $statusCode){
-        $jsonData = Utils::camelCaseArrayKeys($jsonData);
-
         if(is_string($jsonData)){
             $obj = new Error();
             $obj->code = $statusCode;
@@ -36,7 +34,7 @@ class Error {
             $obj->description = $jsonData;
             return $obj;
         }
-
+        $jsonData = Utils::camelCaseArrayKeys($jsonData);
         $jsonData = (object)$jsonData;
         $obj = new Error();
         $obj->code = $jsonData->code;
