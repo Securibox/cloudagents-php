@@ -73,6 +73,7 @@ class Document {
         $obj->contentHash = $jsonData->contentHash;
         $obj->metadatas = $jsonData->metadatas;
         $obj->uniqueIdentifier = $jsonData->uniqueIdentifier;
+        $obj->uniqueIdentifierHash = $jsonData->uniqueIdentifierHash;
         $obj->documentProcessPhase = $jsonData->documentProcessPhase;
         $obj->size = (int)$jsonData->size;
         $obj->deliveryDate = new \DateTime($jsonData->deliveryDate);
