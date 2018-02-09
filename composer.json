@@ -5,7 +5,7 @@
   "homepage": "https://github.com/Securibox/cloudagents-php",
   "keywords": ["cloud","agents","connectors","securibox","sca","sbx","cloudagents"],
   "version": "1.1.7",
-  "license": "GNU GPL",
+  "license": "GPL-3.0-only",
   "authors": [
         {
             "name": "João Rodrigues",
