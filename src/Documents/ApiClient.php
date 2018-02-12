@@ -326,7 +326,7 @@ class ApiClient
             $body['customerUserId'] = $userId;
         }    
         if($isForced){
-            $body['forced'] = $isForced ? 'true':'false';
+            $body['isForced'] = $isForced ? 'true':'false';
         }
         $response = $this->httpClient->accounts()->$accountId()->synchronizations()->post($body);
         $jsonData = json_decode($response->body());

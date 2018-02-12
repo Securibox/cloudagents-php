@@ -29,6 +29,9 @@ class Account {
     /** @var string ID of the agent that the account belongs to. */
     public $agentId;
 
+    /** @var string ID of the agent that the account belongs to. */
+    public $mode;
+
     /** @var array[Credentials] Set of credentials for this account */
     public $credentials;
 
@@ -38,6 +41,7 @@ class Account {
         $account->customerUserId = $jsonData->customerUserId;
         $account->name = $jsonData->name;
         $account->agentId = $jsonData->agentId;
+        $account->mode = $jsonData->mode;
         $account->credentials = Credential::LoadFromJsonArray($jsonData->credentials);
         return $account;
     }
