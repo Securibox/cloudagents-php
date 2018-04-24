@@ -181,7 +181,7 @@ class ApiClient
     }
 
     /**
-    * Lists all accounts.
+    * Lists all accounts with a maximum of 50 accounts per page.
     *
     * @param string $agentId The identifier of the agents to be able to filter by agent.
     * @param string $customerUserId  The customer user identifier to be able to filter accounts by user              

@@ -97,11 +97,18 @@ class CloudAgentsTestSslClient extends TestCase{
 
     public function testGetAllAccounts(){
         $client = ApiClient::SslClientCertificate($this->certificateFilePath, $this->certificateSecret);
+        $accounts = array();
         $resp = $client->GetAllAccounts();
-        $this->assertGreaterThan(0, sizeof($resp));
-        $this->assertInstanceOf(Entities\Account::class, $resp[0]);
-        $this->assertEquals('User123', $resp[0]->customerUserId);
-        var_dump($resp);  
+        $accounts = array_merge($accounts, $resp);
+        $nbOfAccounts = count($resp);
+        while(count($resp) == 50){
+            $resp = $client->GetAllAccounts(null, null, $nbOfAccounts);
+            $accounts = array_merge($accounts, $resp);
+            $nbOfAccounts += count($resp);
+        }
+        $this->assertGreaterThan(0, sizeof($accounts));
+        $this->assertInstanceOf(Entities\Account::class, $accounts[0]);
+        var_dump($accounts);     
     }
 
     public function testGetAccountsByAgent(){
