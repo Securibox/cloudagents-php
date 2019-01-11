@@ -79,17 +79,22 @@ class ApiClient
     * Create a JSON Web Token for authentication
     *
     * @param string $privateKey     private key file path or content
-    * @param array  $privateKeyPassPhrase     private key file passphrase
+    * @param string  $privateKeyPassPhrase     private key file passphrase
+    * @param string  $customerUserId     if used, an additional 'cuid' claim is included in the token.
+    * This claim limits resource access to the ones owned by the specified user
     */
-    public static function BuildJwt($privateKey, $privateKeyPassPhrase){
+    public static function BuildJwt($privateKey, $privateKeyPassPhrase, $customerUserId = null){
       $key = new Http\JWT\Key($privateKey, $privateKeyPassPhrase);
       $signer = new Http\JWT\Signer\Sha256();
-      return (new Http\JWT\Builder())->issuedBy('SCA API SDK')
+      $builder =  (new Http\JWT\Builder())->issuedBy('SCA API SDK')
                              ->relatedTo('sca-multitenant.securibox.eu')
                              ->permittedFor('https://sca-multitenant.securibox.eu')
                              ->issuedAt(time())
-                             ->expiresAt(time() + 3600)
-                             ->getToken($signer, $key);
+                             ->expiresAt(time() + 3600);
+      if ($customerUserId !== null) {
+        $builder->setClaim('cuid', $customerUserId);
+      }
+      return $builder->getToken($signer, $key);
     }
 
     /**
