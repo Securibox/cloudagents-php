@@ -70,7 +70,7 @@ class ApiClient
     * @param string $apiEndpoint  the base url (e.g. https://sca-multitenant.securibox.eu/api/v1)
     */
     public static function Jwt($privateKey, $privateKeyPassPhrase, $apiEndpoint = "https://sca-multitenant.securibox.eu/api/v1"){
-        $token = ApiClient::BuildJwt($privateKey, $privateKeyPassPhrase);
+        $token = ApiClient::BuildJwt($privateKey, $privateKeyPassPhrase, $apiEndpoint);
         $headers = ['Authorization: bearer '.$token];
         $instance = new self($headers, null, $apiEndpoint);
         return $instance;
@@ -80,15 +80,19 @@ class ApiClient
     *
     * @param string $privateKey     private key file path or content
     * @param string  $privateKeyPassPhrase     private key file passphrase
+    * @param string $apiEndpoint  the base url (e.g. https://sca-multitenant.securibox.eu/api/v1)
     * @param string  $customerUserId     if used, an additional 'cuid' claim is included in the token.
     * This claim limits resource access to the ones owned by the specified user
     */
-    public static function BuildJwt($privateKey, $privateKeyPassPhrase, $customerUserId = null){
+    public static function BuildJwt($privateKey, $privateKeyPassPhrase, $apiEndpoint = "https://sca-multitenant.securibox.eu/api/v1", $customerUserId = null){
       $key = new Http\JWT\Key($privateKey, $privateKeyPassPhrase);
       $signer = new Http\JWT\Signer\Sha256();
+      $url_components = \parse_url($apiEndpoint)
+      $aud = $url_components['scheme'] . '://' . $url_components['host']
+      $sub = $url_components['host']
       $builder =  (new Http\JWT\Builder())->issuedBy('SCA API SDK')
-                             ->relatedTo('sca-multitenant.securibox.eu')
-                             ->permittedFor('https://sca-multitenant.securibox.eu')
+                             ->permittedFor($aud)
+                             ->relatedTo($sub)
                              ->issuedAt(time())
                              ->expiresAt(time() + 3600);
       if ($customerUserId !== null) {
