@@ -87,16 +87,16 @@ class ApiClient
     public static function BuildJwt($privateKey, $privateKeyPassPhrase, $apiEndpoint = "https://sca-multitenant.securibox.eu/api/v1", $customerUserId = null){
       $key = new Http\JWT\Key($privateKey, $privateKeyPassPhrase);
       $signer = new Http\JWT\Signer\Sha256();
-      $url_components = \parse_url($apiEndpoint)
-      $aud = $url_components['scheme'] . '://' . $url_components['host']
-      $sub = $url_components['host']
+      $url_components = \parse_url($apiEndpoint);
+      $aud = $url_components['scheme'] . '://' . $url_components['host'];
+      $sub = $url_components['host'];
       $builder =  (new Http\JWT\Builder())->issuedBy('SCA API SDK')
                              ->permittedFor($aud)
                              ->relatedTo($sub)
                              ->issuedAt(time())
                              ->expiresAt(time() + 3600);
       if ($customerUserId !== null) {
-        $builder->setClaim('cuid', $customerUserId);
+        $builder->withClaim('cuid', $customerUserId);
       }
       return $builder->getToken($signer, $key);
     }
