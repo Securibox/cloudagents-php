@@ -23,8 +23,6 @@ final class Key
      */
     public function __construct($content, $passphrase = null)
     {
-        var_dump($content);
-        var_dump($passphrase);
         $this->setContent($content);
         $this->passphrase = $passphrase;
     }
@@ -35,25 +33,14 @@ final class Key
      */
     private function setContent($content)
     {
-        if (\strpos($content, 'file://') === 0) {
-            $content = $this->readFile($content);
+        if (\strpos($content, "-----BEGIN RSA PRIVATE KEY-----") === 0) {
+            $content = $content;
+        } elseif (\is_readable($content)) {  // It's a file path
+            $content = \file_get_contents($content);
+        } else {
+          throw new \InvalidArgumentException('You must inform a valid key or key file');
         }
         $this->content = $content;
-    }
-    /**
-     * @param string $content
-     *
-     * @return string
-     *
-     * @throws \InvalidArgumentException
-     */
-    private function readFile($content)
-    {
-        $file = \substr($content, 7);
-        if (! \is_readable($file)) {
-            throw new \InvalidArgumentException('You must inform a valid key file');
-        }
-        return \file_get_contents($file);
     }
     /**
      * @return string
