@@ -134,11 +134,36 @@ foreach($documents as $document){
 }
 $client->AcknowledgeSynchronizationForAccount($account->customerAccountId, $receivedFiles, array());
 ```
+
+## Webview url
+In order to use the webview and avoid having to implement the APIs to list and configure accounts, a webview has been developped.
+In this webview, a customer can:
+- Browse and search all agents
+- Have quick access to predefined favorite agents
+- List the configured agents
+- Configure, modify or delete an agent account
+- See the list of synchronizations for each account
+
+To use the webview, activate it in the CloudAgents backoffice and use the provided PEM private key to sign the token.
+
+The webview accepts the following url arguments:
+- token: json web token signed with the PEM certificate
+- callback: url where the user is sent on logging out <sub><sup>(ex: https://www.myapp.com - if a state has been provided: https://www.myapp.com?state={state})</sup></sub>
+- lang <sup>optional</sup>: culture to display the page - By default, in fr-FR
+
+Example:
+```
+https://sca-webview.azurewebsites.net?token={token}&callback={callback_url}&state={stateData}
+https://sca-webview.azurewebsites.net?token={token}&callback={callback_url}&state={stateData}&lang=en-us
+```
+For examples in php to generate the token, [please refer to the test][4].
+
 ## License
 [GNU GPL][3]
 
 [1]: https://sca.securibox.eu
 [2]: https://sca.securibox.eu/doc.html
 [3]: https://github.com/Securibox/cloudagents-phpblob/master/LICENSE
+[4]: https://github.com/Securibox/cloudagents-php/blob/master/test/WebView.php
 [packagist-image]: https://img.shields.io/badge/packagist-1.0.2-blue.svg
 [packagist-url]: https://packagist.org/packages/securibox/cloudagents

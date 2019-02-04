@@ -80,11 +80,11 @@ class ApiClient
     *
     * @param string $privateKey     private key file path or content
     * @param string  $privateKeyPassPhrase     private key file passphrase
-    * @param string $apiEndpoint  the base url (e.g. https://sca-multitenant.securibox.eu/api/v1)
-    * @param string  $customerUserId     if used, an additional 'cuid' claim is included in the token.
+    * @param string  $customerUserId     if used, an additional 'uid' claim is included in the token.    
+    * @param string $apiEndpoint  the base url (e.g. https://sca-multitenant.securibox.eu)    
     * This claim limits resource access to the ones owned by the specified user
     */
-    public static function BuildJwt($privateKey, $privateKeyPassPhrase, $apiEndpoint = "https://sca-multitenant.securibox.eu/api/v1", $customerUserId = null){
+    public static function BuildJwt($privateKey, $privateKeyPassPhrase, $customerUserId = null, $apiEndpoint = "https://sca-multitenant.securibox.eu"){
       $key = new Http\JWT\Key($privateKey, $privateKeyPassPhrase);
       $signer = new Http\JWT\Signer\Sha256();
       $url_components = \parse_url($apiEndpoint);
@@ -96,7 +96,7 @@ class ApiClient
                              ->issuedAt(time())
                              ->expiresAt(time() + 3600);
       if ($customerUserId !== null) {
-        $builder->withClaim('cuid', $customerUserId);
+        $builder->withClaim('uid', $customerUserId);
       }
       return $builder->getToken($signer, $key);
     }
