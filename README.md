@@ -59,7 +59,7 @@ use Securibox\CloudAgents\Documents\ApiClient;
 use Securibox\CloudAgents\Documents\Entities;
 
 // If you are not using Composer
-// require("path/to/cloudagents-php/src/CloudAgents.php");
+// require("path/to/cloudagents-php/src/autoload.php");
 
 $client = ApiClient::AuthenticationBasic("Basic Username", "Basic Password");
 $agents = $client->GetAgents();
@@ -85,7 +85,7 @@ use Securibox\CloudAgents\Documents\ApiClient;
 use Securibox\CloudAgents\Documents\Entities;
 
 // If you are not using Composer
-// require("path/to/cloudagents-php/src/CloudAgents.php");
+// require("path/to/cloudagents-php/src/autoload.php");
 
 //Configure account properties
 $account = new Entities\Account();
