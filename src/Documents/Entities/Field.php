@@ -58,27 +58,23 @@ class Field {
     private static function fieldInputTypeFromInt($intValue){
         switch($intValue){
             case 0:
-                return "Undefined";
+                return "Public";
             case 1:
-                return "Public";            
+                return "Private";            
             case 2:
-                return "Private";  
-            case 3:
-                return "NumberPad";                                                                                  
+                return "NumberPad";                                                                            
         }        
     }
     private static function fieldValueTypeFromInt($intValue){
         switch($intValue){
             case 0:
-                return "Undefined";
+                return "Fulltext";
             case 1:
-                return "Fulltext";            
+                return "Password";            
             case 2:
-                return "Password";  
-            case 3:
                 return "Email";  
-            case 4:
-                return "Telephone";                                                                                                  
+            case 3:
+                return "Telephone";                                                                                                 
         }        
     }                       
 }
