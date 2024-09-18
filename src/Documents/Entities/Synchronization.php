@@ -25,15 +25,19 @@ class Synchronization
         'NewAccount',
         'Created',
         'Running',
-        'AgentFailed',
+        'ToDeliver',
         'Delivering',
-        'PendingAcknowledgement',
-        'Completed',
         'ReportFailed',
+        'PendingAcknowledgement',
+        'NotAck',
+        'Completed',
     ];
 
     const SYNCHRONIZATION_STATE_DETAILS = [
         'NewAccount',
+        'Scheduled',
+        'Pending',
+        'InProgress',
         'Completed',
         'CompletedNothingToDownload',
         'CompletedNothingNewToDownload',
@@ -41,9 +45,6 @@ class Synchronization
         'CompletedWithErrors',
         'WrongCredentials',
         'UnexpectedAccountData',
-        'Scheduled',
-        'Pending',
-        'InProgress',
         'DematerialisationNeeded',
         'CheckAccount',
         'AccountBlocked',
@@ -60,6 +61,13 @@ class Synchronization
         'CaptchaFound',
         'WrongOptionalCredentials',
         'WrongMFACode',
+        'ExpiredMFACode',
+        'IdentityProviderNotLinkedToAccount',
+        'PendingUserValidation',
+        'LoggedOutDuringDownload',
+        'ProxyFailure',
+        'BlockedByWebsiteProtectionService',
+        'AdditionalAuthenticationRequiredNotMFA',
     ];
 
     /** @var int The document identifier. */
