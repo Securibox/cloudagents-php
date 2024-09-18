@@ -40,7 +40,7 @@ class ApiClient
     * @param string $apiEndpoint  the base url (e.g. https://sca-multitenant.securibox.eu/api/v1)
     */
     public static function AuthenticationBasic($username, $password, $apiEndpoint = "https://sca-multitenant.securibox.eu/api/v1"){
-        $headers = ['Authorization: basic '.base64_encode($username.':'.$password)];
+        $headers = ['Authorization: Basic '.base64_encode($username.':'.$password)];
         $instance = new self($headers, null, $apiEndpoint);
         return $instance;
 
