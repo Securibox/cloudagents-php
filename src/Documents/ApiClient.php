@@ -27,9 +27,9 @@ class ApiClient
     *
     * @param string $username     basic username
     * @param array  $password     basic password
-    * @param string $apiEndpoint  the base url (e.g. https://sca-multitenant.securibox.eu/api/v1)
+    * @param string $apiEndpoint  the base url (e.g. https://sca-mt-dev.securibox.eu/api/v1)
     */
-    public function __construct($httpHeaders, $curlOptions = null, $apiEndpoint = "https://sca-multitenant.securibox.eu/api/v1"){
+    public function __construct($httpHeaders, $curlOptions = null, $apiEndpoint = "https://sca-mt-dev.securibox.eu/api/v1"){
         $this->httpClient = new Http\HttpClient($apiEndpoint, $httpHeaders, null, null, $curlOptions);
     }
     /**
@@ -37,9 +37,9 @@ class ApiClient
     *
     * @param string $username     basic username
     * @param array  $password     basic password
-    * @param string $apiEndpoint  the base url (e.g. https://sca-multitenant.securibox.eu/api/v1)
+    * @param string $apiEndpoint  the base url (e.g. https://sca-mt-dev.securibox.eu/api/v1)
     */
-    public static function AuthenticationBasic($username, $password, $apiEndpoint = "https://sca-multitenant.securibox.eu/api/v1"){
+    public static function AuthenticationBasic($username, $password, $apiEndpoint = "https://sca-mt-dev.securibox.eu/api/v1"){
         $headers = ['Authorization: Basic '.base64_encode($username.':'.$password)];
         $instance = new self($headers, null, $apiEndpoint);
         return $instance;
@@ -50,9 +50,9 @@ class ApiClient
     *
     * @param string $certificateFile        certificate file path (PEM format)
     * @param array  $certificatePassword    PEM pass phrase
-    * @param string $apiEndpoint            the base url (e.g. https://sca-multitenant.securibox.eu/api/v1)
+    * @param string $apiEndpoint            the base url (e.g. https://sca-mt-dev.securibox.eu/api/v1)
     */
-    public static function SslClientCertificate($certificateFile, $certificatePassword, $apiEndpoint = "https://sca-multitenant.securibox.eu/api/v1"){
+    public static function SslClientCertificate($certificateFile, $certificatePassword, $apiEndpoint = "https://sca-mt-dev.securibox.eu/api/v1"){
         $curlOptions = array(
             CURLOPT_SSLCERT => $certificateFile
         );
@@ -67,9 +67,9 @@ class ApiClient
     *
     * @param string $username     basic username
     * @param array  $password     basic password
-    * @param string $apiEndpoint  the base url (e.g. https://sca-multitenant.securibox.eu/api/v1)
+    * @param string $apiEndpoint  the base url (e.g. https://sca-mt-dev.securibox.eu/api/v1)
     */
-    public static function Jwt($privateKey, $privateKeyPassPhrase, $apiEndpoint = "https://sca-multitenant.securibox.eu/api/v1"){
+    public static function Jwt($privateKey, $privateKeyPassPhrase, $apiEndpoint = "https://sca-mt-dev.securibox.eu/api/v1"){
         $token = ApiClient::BuildJwt($privateKey, $privateKeyPassPhrase, $apiEndpoint);
         $headers = ['Authorization: bearer '.$token];
         $instance = new self($headers, null, $apiEndpoint);
@@ -81,10 +81,10 @@ class ApiClient
     * @param string $privateKey     private key file path or content
     * @param string  $privateKeyPassPhrase     private key file passphrase
     * @param string  $customerUserId     if used, an additional 'uid' claim is included in the token.    
-    * @param string $apiEndpoint  the base url (e.g. https://sca-multitenant.securibox.eu)    
+    * @param string $apiEndpoint  the base url (e.g. https://sca-mt-dev.securibox.eu)
     * This claim limits resource access to the ones owned by the specified user
     */
-    public static function BuildJwt($privateKey, $privateKeyPassPhrase, $customerUserId = null, $apiEndpoint = "https://sca-multitenant.securibox.eu"){
+    public static function BuildJwt($privateKey, $privateKeyPassPhrase, $customerUserId = null, $apiEndpoint = "https://sca-mt-dev.securibox.eu"){
       $key = new Http\JWT\Key($privateKey, $privateKeyPassPhrase);
       $signer = new Http\JWT\Signer\Sha256();
       $url_components = \parse_url($apiEndpoint);
