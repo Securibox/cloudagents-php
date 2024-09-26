@@ -5,7 +5,7 @@
  * PHP version 5.4
  *
  * @author    João Rodrigues <joao.rodrigues@securibox.eu>
- * @copyright 2017 Securibox
+ * @copyright 2024 Securibox
  * @license   https://opensource.org/licenses/MIT The MIT License
  * @version   GIT: https://github.com/Securibox/cloudagents-php
  * @link      http://packagist.org/packages/securibox/cloudagents
@@ -25,11 +25,12 @@ class Synchronization
         'NewAccount',
         'Created',
         'Running',
-        'AgentFailed',
+        'ToDeliver',
         'Delivering',
         'PendingAcknowledgement',
         'Completed',
         'ReportFailed',
+        'NotAck'
     ];
 
     const SYNCHRONIZATION_STATE_DETAILS = [
@@ -60,6 +61,13 @@ class Synchronization
         'CaptchaFound',
         'WrongOptionalCredentials',
         'WrongMFACode',
+        'ExpiredMFACode',
+        'IdentityProviderNotLinkedToAccount',
+        'PendingUserValidation',
+        'LoggedOutDuringDownload',
+        'ProxyFailure',
+        'BlockedByWebsiteProtectionService',
+        'AdditionalAuthenticationRequiredNotMFA'
     ];
 
     /** @var int The document identifier. */

@@ -198,7 +198,7 @@ class HttpClient
             CURLOPT_FRESH_CONNECT => true,
             CURLOPT_CUSTOMREQUEST => strtoupper($method),
             CURLOPT_SSL_VERIFYPEER => false,
-            // CURLOPT_VERBOSE => true,
+            //CURLOPT_VERBOSE => true
             // CURLOPT_STDERR => fopen('php://stderr', 'w')
         ] + $this->curlOptions;
         

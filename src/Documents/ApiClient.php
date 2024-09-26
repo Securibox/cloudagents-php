@@ -40,7 +40,7 @@ class ApiClient
     * @param string $apiEndpoint  the base url (e.g. https://sca-multitenant.securibox.eu/api/v1)
     */
     public static function AuthenticationBasic($username, $password, $apiEndpoint = "https://sca-multitenant.securibox.eu/api/v1"){
-        $headers = ['Authorization: basic '.base64_encode($username.':'.$password)];
+        $headers = ['Authorization: Basic '.base64_encode($username.':'.$password)];
         $instance = new self($headers, null, $apiEndpoint);
         return $instance;
 
@@ -333,14 +333,15 @@ class ApiClient
         }
         $body = array();
         if(isset($accountId)){
-            $body['customerAccountId'] = $accountId;
+            $body['customerAccountId'] = strtolower($accountId);
         }
         if(isset($userId)){
-            $body['customerUserId'] = $userId;
+            $body['customerUserId'] = strtolower($userId);
         }
         if($isForced){
-            $body['isForced'] = $isForced ? 'true':'false';
+            $body['isForced'] = $isForced ? true:false;
         }
+
         $response = $this->httpClient->accounts()->$accountId()->synchronizations()->post($body);
         $jsonData = json_decode($response->body());
         if($response->statusCode() >= 400){
@@ -573,7 +574,7 @@ class ApiClient
     */
     public function AcknowledgeSynchronizationForAccount($customerAccountId, $documentIds = [], $missingDocumentIds = []){
         $body = array(
-            'customerAccountId' => $customerAccountId,
+            'customerAccountId' => strtolower($customerAccountId),
             'documentIds' => $documentIds,
             'missingDocumentIds' => $missingDocumentIds
         );
