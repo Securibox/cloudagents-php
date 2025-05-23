@@ -29,7 +29,7 @@ class ApiClient
     * @param array  $password     basic password
     * @param string $apiEndpoint  the base url (e.g. https://sca-multitenant.securibox.eu/api/v1)
     */
-    public function __construct($httpHeaders, $curlOptions = null, $apiEndpoint = "https://sca-multitenant.securibox.eu/api/v1"){
+    public function __construct($httpHeaders, $curlOptions = null, $apiEndpoint){
         $this->httpClient = new Http\HttpClient($apiEndpoint, $httpHeaders, null, null, $curlOptions);
     }
     /**
@@ -39,7 +39,7 @@ class ApiClient
     * @param array  $password     basic password
     * @param string $apiEndpoint  the base url (e.g. https://sca-multitenant.securibox.eu/api/v1)
     */
-    public static function AuthenticationBasic($username, $password, $apiEndpoint = "https://sca-multitenant.securibox.eu/api/v1"){
+    public static function AuthenticationBasic($username, $password, $apiEndpoint){
         $headers = ['Authorization: Basic '.base64_encode($username.':'.$password)];
         $instance = new self($headers, null, $apiEndpoint);
         return $instance;
@@ -52,7 +52,7 @@ class ApiClient
     * @param array  $certificatePassword    PEM pass phrase
     * @param string $apiEndpoint            the base url (e.g. https://sca-multitenant.securibox.eu/api/v1)
     */
-    public static function SslClientCertificate($certificateFile, $certificatePassword, $apiEndpoint = "https://sca-multitenant.securibox.eu/api/v1"){
+    public static function SslClientCertificate($certificateFile, $certificatePassword, $apiEndpoint){
         $curlOptions = array(
             CURLOPT_SSLCERT => $certificateFile
         );
@@ -69,7 +69,7 @@ class ApiClient
     * @param array  $password     basic password
     * @param string $apiEndpoint  the base url (e.g. https://sca-multitenant.securibox.eu/api/v1)
     */
-    public static function Jwt($privateKey, $privateKeyPassPhrase, $apiEndpoint = "https://sca-multitenant.securibox.eu/api/v1"){
+    public static function Jwt($privateKey, $privateKeyPassPhrase, $apiEndpoint){
         $token = ApiClient::BuildJwt($privateKey, $privateKeyPassPhrase, $apiEndpoint);
         $headers = ['Authorization: bearer '.$token];
         $instance = new self($headers, null, $apiEndpoint);
@@ -84,7 +84,7 @@ class ApiClient
     * @param string $apiEndpoint  the base url (e.g. https://sca-multitenant.securibox.eu)    
     * This claim limits resource access to the ones owned by the specified user
     */
-    public static function BuildJwt($privateKey, $privateKeyPassPhrase, $customerUserId = null, $apiEndpoint = "https://sca-multitenant.securibox.eu"){
+    public static function BuildJwt($privateKey, $privateKeyPassPhrase, $customerUserId = null, $apiEndpoint){
       $key = new Http\JWT\Key($privateKey, $privateKeyPassPhrase);
       $signer = new Http\JWT\Signer\Sha256();
       $url_components = \parse_url($apiEndpoint);
@@ -549,13 +549,28 @@ class ApiClient
     * Acknowledge the reception of a specific document.
     *
     * @param string $documentId The document identifier.
-    *
+    * @param boolean $failed Specifies if the document has been failed.
+    * @param boolean $refused Specifies if the document has been refused.
     * @return boolean Returns true if the acknowledgement is successful.
     */
-    public function AcknowledgeDocumentDelivery($documentId){
-        $response = $this->httpClient->documents()->$documentId()->ack()->put($documentId);
+    public function AcknowledgeDocumentDelivery($documentId, $failed = false, $refused = false){
+        $queryParams = array();
+        if(isset($failed)){
+            $queryParams['failed'] = $failed ? 'true': 'false';
+        }
+
+        if(isset($refused)){
+            $queryParams['refused'] = $refused ? 'true': 'false';
+        }
+
+        if($failed && $refused){
+            throw new Exception("You cannot set both failed and refused to true.");
+        }
+
+        $response = $this->httpClient->documents()->$documentId()->ack()->put($documentId, $queryParams);
         if($response->statusCode() == 200)
             return true;
+
         $jsonData = json_decode($response->body());
         if($response->statusCode() >= 400){
             return  Entities\Error::LoadFromJson($jsonData, $response->statusCode());

@@ -57,16 +57,23 @@ class Field {
 
     private static function fieldInputTypeFromInt($intValue){
         switch($intValue){
+            case -1:
+                return "Undefined";
             case 0:
                 return "Public";
             case 1:
                 return "Private";            
             case 2:
-                return "NumberPad";                                                                            
+                return "NumberPad";
+            default:
+                throw new RuntimeException(sprintf('Unsupported field input type %d. Try to update SDK!', $intValue));                                                                    
         }        
     }
+    
     private static function fieldValueTypeFromInt($intValue){
         switch($intValue){
+            case -1:
+                return "Undefined";
             case 0:
                 return "Fulltext";
             case 1:
@@ -74,7 +81,9 @@ class Field {
             case 2:
                 return "Email";  
             case 3:
-                return "Telephone";                                                                                                 
+                return "Telephone";
+            default:
+                throw new RuntimeException(sprintf('Unsupported field value type %d. Try to update SDK!', $intValue));                                                                               
         }        
     }                       
 }

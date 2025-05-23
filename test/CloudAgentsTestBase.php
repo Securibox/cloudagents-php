@@ -185,12 +185,18 @@ class CloudAgentsTestBase extends TestCase{
     }
 
     public function testAcknowledgeDocumentDelivery(){
-        $resp = $this->client->GetDocumentsByAccount($this->customerAccountId);
-        if(sizeof($resp) == 0){
-            $this->assertEmpty($resp);
+        $respDoc = $this->client->GetDocumentsByAccount($this->customerAccountId);
+        if(sizeof($respDoc) == 0){
+            $this->assertEmpty($respDoc);
             return;
         }
-        $resp = $this->client->AcknowledgeDocumentDelivery(strval($resp[0]->id));
+        $resp = $this->client->AcknowledgeDocumentDelivery(strval($respDoc[0]->id));
+        $this->assertEquals(true, $resp);
+
+         $resp = $this->client->AcknowledgeDocumentDelivery(strval($respDoc[1]->id), refused: true);
+        $this->assertEquals(true, $resp);
+
+         $resp = $this->client->AcknowledgeDocumentDelivery(strval($respDoc[2]->id), failed: true);
         $this->assertEquals(true, $resp);
     }
 
