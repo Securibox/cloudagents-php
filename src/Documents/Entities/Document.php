@@ -113,6 +113,8 @@ class Document {
                 return 'Holding';
             case 8:
                 return 'Parsing';
+            case 8:
+                return 'ToPack';
             default:
                 throw new \RuntimeException(sprintf('Unsupported documentProcessPhase code %d. Try to update SDK!', $intValue));                                                                          
         }
