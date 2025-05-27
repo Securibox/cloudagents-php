@@ -35,6 +35,9 @@ class Account {
     /** @var array[Credentials] Set of credentials for this account */
     public $credentials;
 
+    /** @var object[AdditionalAuthData] Additional authentication data for this account */ 
+    public $additionalAuthenticationData;
+
     public static function LoadFromJson($jsonData){
         $account = new Account();
         $account->customerAccountId = $jsonData->customerAccountId;
@@ -43,6 +46,11 @@ class Account {
         $account->agentId = $jsonData->agentId;
         $account->mode = Account::accountModeFromInt($jsonData->mode);
         $account->credentials = Credential::LoadFromJsonArray($jsonData->credentials);
+        if(isset($jsonData->additionalAuthenticationData)){
+            $account->additionalAuthenticationData = AdditionalAuthData::LoadFromJson($jsonData->additionalAuthenticationData);
+        } else {
+            $account->additionalAuthenticationData = null;
+        }
         return $account;
     }
 
@@ -70,3 +78,4 @@ class Account {
         }
     }
 }
+?>

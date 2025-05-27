@@ -102,95 +102,23 @@ class ApiClient
     }
 
     /**
-    * Lists the agents categories.
+    * Create and synchronize an account.
     *
-    * @param string $culture The culture of the returned information.
+    * @param Account $account The account object to be created.
     *
-    * @return array[Category] A list of agent categories.
+    * @return Account The created account.
     */
-    public function GetCategories($culture = 'FR-fr'){
-        $response = $this->httpClient->categories()->get(null, array('culture' => $culture));
+    public function CreateAccount($account){
+        $body = array(
+            'synchronize' => true,
+            'account' => $account
+        );
+        $response = $this->httpClient->accounts()->post($body);
         $jsonData = json_decode($response->body());
         if($response->statusCode() >= 400){
             return  Entities\Error::LoadFromJson($jsonData, $response->statusCode());
         }
-        return Entities\Category::LoadFromJsonArray($jsonData);
-    }
-
-    /**
-    * Get Agent By identifier
-    *
-    * @param string $agentIdentifier The agent Guid identifier
-    *
-    * @return Entities\Agent The agent
-    */
-    public function GetAgent($agentIdentifier){
-        $response = $this->httpClient->agents()->$agentIdentifier()->get();
-        $jsonData = json_decode($response->body());
-        if($response->statusCode() >= 400){
-            return  Entities\Error::LoadFromJson($jsonData, $response->statusCode());
-        }
-        return  Entities\Agent::LoadFromJson($jsonData);
-    }
-
-    /**
-    * Lists all available agents.
-    *
-    * @param string $includeLogo Specifies if the response should include the agents logo in base64 enconding.
-    * @param string $culture The culture of the returned information.
-    *
-    * @return array[Agent] A list of agents.
-    */
-    public function GetAgents($culture = 'FR-fr'){
-        $response = $this->httpClient->agents()->get(null, array('culture' => $culture));
-        $jsonData = json_decode($response->body());
-        if($response->statusCode() >= 400){
-            return  Entities\Error::LoadFromJson($jsonData, $response->statusCode());
-        }
-        return  Entities\Agent::LoadFromJsonArray($jsonData);
-    }
-
-
-    /**
-    * Lists all available agents.
-    *
-    * @param string $country The desired agents country.
-    * @param string $culture The culture of the returned information.
-    * @param string $includeLogo Specifies if the response should include the agents logo in base64 enconding.
-    * @param string $p The query string that will filter agents starting with the defined prefix
-    *
-    * @return array[Agent] A list of agents.
-    */
-    public function SearchAgents($country = null, $culture = 'FR-fr', $q = null){
-        $queryParams = array('culture' => $culture);
-        if(isset($country)){
-            $queryParams['country'] = $country;
-        }
-        if(isset($q)){
-            $queryParams['q'] = $q;
-        }
-        $response = $this->httpClient->agents()->search()->get(null, $queryParams);
-        $jsonData = json_decode($response->body());
-        if($response->statusCode() >= 400){
-            return  Entities\Error::LoadFromJson($jsonData, $response->statusCode());
-        }
-        return  Entities\Agent::LoadFromJsonArray($jsonData);
-    }
-
-    /**
-    * Lists agents by category
-    *
-    * @param string $categoryId The category identifier.
-    *
-    * @return array[Agent] A list of agents.
-    */
-    public function GetAgentByCategoryId($categoryId){
-        $response = $this->httpClient->categories()->$categoryId()->agents()->get();
-        $jsonData = json_decode($response->body());
-        if($response->statusCode() >= 400){
-            return  Entities\Error::LoadFromJson($jsonData, $response->statusCode());
-        }
-        return  Entities\Agent::LoadFromJsonArray($jsonData);
+        return Entities\Account::LoadFromJson($jsonData);
     }
 
     /**
@@ -226,28 +154,35 @@ class ApiClient
     }
 
     /**
-    * Lists accounts by agent.
+    * Searches accounts by agent identifier and/or by customer account identifier.
     *
     * @param string $agentId The identifier of the agents to be able to filter by agent.
+    * @param string $customerUserId The identifier of the user to be able to filter by user.
     * @param string $skip The number of accounts to skip (used for pagination).
     * @param string $take The maximum number of accounts to be returned (used for pagination).
     *
-    * @return array[Account] A list of accounts.
+    * @return array[Account] An account.
     */
-    public function GetAccountsByAgent($agentId, $skip = null, $take = null){
+    public function SearchAccounts($agentId = null, $customerUserId = null, $skip = null, $take = null){
         $queryParams = array();
+        if(isset($agentId)){
+            $queryParams['agentId'] = $agentId;
+        }
+        if(isset($customerUserId)){
+            $queryParams['customerUserId'] = $customerUserId;
+        }
         if(isset($skip)){
             $queryParams['skip'] = $skip;
         }
         if(isset($take)){
             $queryParams['take'] = $take;
         }
-        $response = $this->httpClient->agents()->$agentId()->accounts()->get(null, $queryParams);
+        $response = $this->httpClient->accounts()->search()->get(null, $queryParams);
         $jsonData = json_decode($response->body());
         if($response->statusCode() >= 400){
             return  Entities\Error::LoadFromJson($jsonData, $response->statusCode());
         }
-        return  Entities\Account::LoadFromJsonArray($jsonData);
+        return Entities\Account::LoadFromJsonArray($jsonData);
     }
 
     /**
@@ -267,41 +202,6 @@ class ApiClient
     }
 
     /**
-    * Deletes an account by customer account identifier.
-    *
-    * @param string $customerAccountId The customer account identifier.
-    *
-    * @return boolean true if the account has been successfully deleted.
-    */
-    public function DeleteAccount($customerAccountId){
-        $response = $this->httpClient->accounts()->$customerAccountId()->delete();
-        if($response->statusCode() == 200)
-            return true;
-
-        return false;
-    }
-
-    /**
-    * Create and synchronize an account.
-    *
-    * @param Account $account The account object to be created.
-    *
-    * @return Account The created account.
-    */
-    public function CreateAccount($account){
-        $body = array(
-            'synchronize' => true,
-            'account' => $account
-        );
-        $response = $this->httpClient->accounts()->post($body);
-        $jsonData = json_decode($response->body());
-        if($response->statusCode() >= 400){
-            return  Entities\Error::LoadFromJson($jsonData, $response->statusCode());
-        }
-        return Entities\Account::LoadFromJson($jsonData);
-    }
-
-    /**
     * Update an existing account information.
     *
     * @param string $accountId The customer account identifier for the account to be modified.
@@ -316,6 +216,21 @@ class ApiClient
             return  Entities\Error::LoadFromJson($jsonData, $response->statusCode());
         }
         return Entities\Account::LoadFromJson($jsonData);
+    }
+
+    /**
+    * Deletes an account by customer account identifier.
+    *
+    * @param string $customerAccountId The customer account identifier.
+    *
+    * @return boolean true if the account has been successfully deleted.
+    */
+    public function DeleteAccount($customerAccountId){
+        $response = $this->httpClient->accounts()->$customerAccountId()->delete();
+        if($response->statusCode() == 200)
+            return true;
+
+        return false;
     }
 
     /**
@@ -352,38 +267,6 @@ class ApiClient
         }else{
             return  Entities\Synchronization::LoadFromJson($jsonData);
         }
-    }
-
-    /**
-    * Searches accounts by agent identifier and/or by customer account identifier.
-    *
-    * @param string $agentId The identifier of the agents to be able to filter by agent.
-    * @param string $customerUserId The identifier of the user to be able to filter by user.
-    * @param string $skip The number of accounts to skip (used for pagination).
-    * @param string $take The maximum number of accounts to be returned (used for pagination).
-    *
-    * @return array[Account] An account.
-    */
-    public function SearchAccounts($agentId = null, $customerUserId = null, $skip = null, $take = null){
-        $queryParams = array();
-        if(isset($agentId)){
-            $queryParams['agentId'] = $agentId;
-        }
-        if(isset($customerUserId)){
-            $queryParams['customerUserId'] = $customerUserId;
-        }
-        if(isset($skip)){
-            $queryParams['skip'] = $skip;
-        }
-        if(isset($take)){
-            $queryParams['take'] = $take;
-        }
-        $response = $this->httpClient->accounts()->search()->get(null, $queryParams);
-        $jsonData = json_decode($response->body());
-        if($response->statusCode() >= 400){
-            return  Entities\Error::LoadFromJson($jsonData, $response->statusCode());
-        }
-        return Entities\Account::LoadFromJsonArray($jsonData);
     }
 
     /**
@@ -427,44 +310,184 @@ class ApiClient
         return Entities\Synchronization::LoadFromJson($jsonData);
     }
 
+    /** Get  GetSynchronizationAdditionalAuthDataByCustomerAccountIdAsync
+     * 
+     * @param string $accountId The customer account identifier.
+     * 
+     * @return AdditionalAuthData The additional authentication data.
+    */
+    public function GetSynchronizationAdditionalAuthDataByCustomerAccountId($accountId){
+        $response = $this->httpClient->accounts()->$accountId()->mfa()->get();
+        $jsonData = json_decode($response->body());
+        print_r($jsonData);
+        if($response->statusCode() >= 400){
+            return  Entities\Error::LoadFromJson($jsonData, $response->statusCode());
+        }
+        return Entities\AdditionalAuthData::LoadFromJson($jsonData);
+    }
+
+    /** Update  UpdateSynchronizationAdditionalAuth
+     * @param string $accountId The customer account identifier.
+     * @param AdditionalAuthRequest $additionalAuthRequest The additional authentication data to launch the syncrhonization.
+     *
+     * @return array[Synchronization] A Synchronization object.
+    */
+    public function UpdateSynchronizationAdditionalAuth($additionalAuthRequest){
+        $accountId = $additionalAuthRequest->accountId;
+        if(!isset($accountId)){
+            throw new Exception("The accountId must be specified.");
+        }
+        $response = $this->httpClient->accounts()->$accountId()->mfa()->post($additionalAuthRequest);
+        $jsonData = json_decode($response->body());
+        if($response->statusCode() >= 400){
+            return  Entities\Error::LoadFromJson($jsonData, $response->statusCode());
+        }
+        if(is_array($jsonData)){
+            return  Entities\Synchronization::LoadFromJsonArray($jsonData);
+        }else{
+            return  Entities\Synchronization::LoadFromJson($jsonData);
+        }
+    }
+
     /**
-    * Search synchronizations by account, user, time windows.
+    * Get all documents for an account
     *
-    * @param string $accountId The customer account identifier for which you want to have the last synchronization.
-    * @param string $customerUserId The identifier of the user to be able to filter by user.
-    * @param string $startDate The start date filter.
-    * @param string $endDate The end date filter.
+    * @param string $customerAccountId The customer account identifier.
+    * @param boolean $pendingOnly Lists only the documents not delivered.
+    * @param boolean $includeContent Specifies if the response should include the document content in base64 enconding.
+    *
+    * @return array[Document] An array of Document objects.
+    */
+    public function GetDocumentsByAccount($customerAccountId, $pendingOnly = false, $includeContent = false){
+        $queryParams = array();
+        if(isset($pendingOnly)){
+            $queryParams['pendingOnly'] = $pendingOnly ? 'true': 'false';
+        }
+        if(isset($includeContent)){
+            $queryParams['includeContent'] = $includeContent ? 'true': 'false';
+        }
+        $response = $this->httpClient->accounts()->$customerAccountId()->documents()->get(null, $queryParams);
+        $jsonData = json_decode($response->body());
+        if($response->statusCode() >= 400){
+            return  Entities\Error::LoadFromJson($jsonData, $response->statusCode());
+        }
+        return Entities\Document::LoadFromJsonArray($jsonData);
+    }
+
+    /**
+    * Lists all available agents.
+    *
+    * @param string $includeLogo Specifies if the response should include the agents logo in base64 enconding.
+    * @param string $culture The culture of the returned information.
+    *
+    * @return array[Agent] A list of agents.
+    */
+    public function GetAgents($culture = 'FR-fr'){
+        $response = $this->httpClient->agents()->get(null, array('culture' => $culture));
+        $jsonData = json_decode($response->body());
+        if($response->statusCode() >= 400){
+            return  Entities\Error::LoadFromJson($jsonData, $response->statusCode());
+        }
+        return  Entities\Agent::LoadFromJsonArray($jsonData);
+    }
+
+    /**
+    * Lists all available agents.
+    *
+    * @param string $country The desired agents country.
+    * @param string $culture The culture of the returned information.
+    * @param string $includeLogo Specifies if the response should include the agents logo in base64 enconding.
+    * @param string $p The query string that will filter agents starting with the defined prefix
+    *
+    * @return array[Agent] A list of agents.
+    */
+    public function SearchAgents($country = null, $culture = 'FR-fr', $q = null){
+        $queryParams = array('culture' => $culture);
+        if(isset($country)){
+            $queryParams['country'] = $country;
+        }
+        if(isset($q)){
+            $queryParams['q'] = $q;
+        }
+        $response = $this->httpClient->agents()->search()->get(null, $queryParams);
+        $jsonData = json_decode($response->body());
+        if($response->statusCode() >= 400){
+            return  Entities\Error::LoadFromJson($jsonData, $response->statusCode());
+        }
+        return  Entities\Agent::LoadFromJsonArray($jsonData);
+    }
+
+    /**
+    * Get Agent By identifier
+    *
+    * @param string $agentIdentifier The agent Guid identifier
+    *
+    * @return Entities\Agent The agent
+    */
+    public function GetAgent($agentIdentifier){
+        $response = $this->httpClient->agents()->$agentIdentifier()->get();
+        $jsonData = json_decode($response->body());
+        if($response->statusCode() >= 400){
+            return  Entities\Error::LoadFromJson($jsonData, $response->statusCode());
+        }
+        return  Entities\Agent::LoadFromJson($jsonData);
+    }
+
+    /**
+    * Lists accounts by agent.
+    *
+    * @param string $agentId The identifier of the agents to be able to filter by agent.
     * @param string $skip The number of accounts to skip (used for pagination).
     * @param string $take The maximum number of accounts to be returned (used for pagination).
     *
-    * @return array[Synchronization] An array of Synchronization object.
+    * @return array[Account] A list of accounts.
     */
-    public function SearchSynchronizations($accountId, $customerUserId = null, $startDate = null, $endDate = null, $skip = null, $take = null){
+    public function GetAccountsByAgent($agentId, $skip = null, $take = null){
         $queryParams = array();
-        if(isset($accountId)){
-            $queryParams['customerAccountId'] = $accountId;
-        }
-        if(isset($customerUserId)){
-            $queryParams['customerUserId'] = $customerUserId;
-        }
-        if(isset($startDate)){
-            $queryParams['startDate'] = $startDate;
-        }
-        if(isset($endDate)){
-            $queryParams['endDate'] = $endDate;
-        }
         if(isset($skip)){
             $queryParams['skip'] = $skip;
         }
         if(isset($take)){
             $queryParams['take'] = $take;
         }
-        $response = $this->httpClient->synchronizations()->search()->get(null, $queryParams);
+        $response = $this->httpClient->agents()->$agentId()->accounts()->get(null, $queryParams);
         $jsonData = json_decode($response->body());
         if($response->statusCode() >= 400){
             return  Entities\Error::LoadFromJson($jsonData, $response->statusCode());
         }
-        return Entities\Synchronization::LoadFromJsonArray($jsonData);
+        return  Entities\Account::LoadFromJsonArray($jsonData);
+    }
+
+    /**
+    * Lists the agents categories.
+    *
+    * @param string $culture The culture of the returned information.
+    *
+    * @return array[Category] A list of agent categories.
+    */
+    public function GetCategories($culture = 'FR-fr'){
+        $response = $this->httpClient->categories()->get(null, array('culture' => $culture));
+        $jsonData = json_decode($response->body());
+        if($response->statusCode() >= 400){
+            return  Entities\Error::LoadFromJson($jsonData, $response->statusCode());
+        }
+        return Entities\Category::LoadFromJsonArray($jsonData);
+    }
+   
+    /**
+    * Lists agents by category
+    *
+    * @param string $categoryId The category identifier.
+    *
+    * @return array[Agent] A list of agents.
+    */
+    public function GetAgentByCategoryId($categoryId){
+        $response = $this->httpClient->categories()->$categoryId()->agents()->get();
+        $jsonData = json_decode($response->body());
+        if($response->statusCode() >= 400){
+            return  Entities\Error::LoadFromJson($jsonData, $response->statusCode());
+        }
+        return  Entities\Agent::LoadFromJsonArray($jsonData);
     }
 
     /**
@@ -521,31 +544,6 @@ class ApiClient
     }
 
     /**
-    * Get all documents for an account
-    *
-    * @param string $customerAccountId The customer account identifier.
-    * @param boolean $pendingOnly Lists only the documents not delivered.
-    * @param boolean $includeContent Specifies if the response should include the document content in base64 enconding.
-    *
-    * @return array[Document] An array of Document objects.
-    */
-    public function GetDocumentsByAccount($customerAccountId, $pendingOnly = false, $includeContent = false){
-        $queryParams = array();
-        if(isset($pendingOnly)){
-            $queryParams['pendingOnly'] = $pendingOnly ? 'true': 'false';
-        }
-        if(isset($includeContent)){
-            $queryParams['includeContent'] = $includeContent ? 'true': 'false';
-        }
-        $response = $this->httpClient->accounts()->$customerAccountId()->documents()->get(null, $queryParams);
-        $jsonData = json_decode($response->body());
-        if($response->statusCode() >= 400){
-            return  Entities\Error::LoadFromJson($jsonData, $response->statusCode());
-        }
-        return Entities\Document::LoadFromJsonArray($jsonData);
-    }
-
-    /**
     * Acknowledge the reception of a specific document.
     *
     * @param string $documentId The document identifier.
@@ -576,6 +574,82 @@ class ApiClient
             return  Entities\Error::LoadFromJson($jsonData, $response->statusCode());
         }
         return false;
+    }
+
+    /**
+    * Creates a new synchronization for an account.
+    *
+    * @param string $accountId The customer account identifier.
+    * @param string $userId The customer user identifier.
+    * @param string $isForced Specifies if the synchronization is forced or not.
+    *
+    * @return array[Synchronization] A Synchronization object.
+    */
+    public function CreateSynchronization($accountId = null, $userId = null, $isForced = false){
+        if(!isset($accountId) && !isset($userId)){
+            throw new Exception("Either the customerAccountId or the customerUserId must be specified.");
+        }
+        $body = array();
+        if(isset($accountId)){
+            $body['customerAccountId'] = strtolower($accountId);
+        }
+        if(isset($userId)){
+            $body['customerUserId'] = strtolower($userId);
+        }
+        if($isForced){
+            $body['isForced'] = $isForced ? true:false;
+        }
+
+        $response = $this->httpClient->synchronizations()->$accountId()->synchronizations()->post($body);
+        $jsonData = json_decode($response->body());
+        if($response->statusCode() >= 400){
+            return  Entities\Error::LoadFromJson($jsonData, $response->statusCode());
+        }
+        if(is_array($jsonData)){
+            return  Entities\Synchronization::LoadFromJsonArray($jsonData);
+        }else{
+            return  Entities\Synchronization::LoadFromJson($jsonData);
+        }
+    }
+
+    /**
+    * Search synchronizations by account, user, time windows.
+    *
+    * @param string $accountId The customer account identifier for which you want to have the last synchronization.
+    * @param string $customerUserId The identifier of the user to be able to filter by user.
+    * @param string $startDate The start date filter.
+    * @param string $endDate The end date filter.
+    * @param string $skip The number of accounts to skip (used for pagination).
+    * @param string $take The maximum number of accounts to be returned (used for pagination).
+    *
+    * @return array[Synchronization] An array of Synchronization object.
+    */
+    public function SearchSynchronizations($accountId, $customerUserId = null, $startDate = null, $endDate = null, $skip = null, $take = null){
+        $queryParams = array();
+        if(isset($accountId)){
+            $queryParams['customerAccountId'] = $accountId;
+        }
+        if(isset($customerUserId)){
+            $queryParams['customerUserId'] = $customerUserId;
+        }
+        if(isset($startDate)){
+            $queryParams['startDate'] = $startDate;
+        }
+        if(isset($endDate)){
+            $queryParams['endDate'] = $endDate;
+        }
+        if(isset($skip)){
+            $queryParams['skip'] = $skip;
+        }
+        if(isset($take)){
+            $queryParams['take'] = $take;
+        }
+        $response = $this->httpClient->synchronizations()->search()->get(null, $queryParams);
+        $jsonData = json_decode($response->body());
+        if($response->statusCode() >= 400){
+            return  Entities\Error::LoadFromJson($jsonData, $response->statusCode());
+        }
+        return Entities\Synchronization::LoadFromJsonArray($jsonData);
     }
 
     /**

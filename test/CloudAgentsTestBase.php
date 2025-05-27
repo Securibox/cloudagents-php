@@ -9,7 +9,6 @@ use PHPUnit\Framework\TestCase;
 class CloudAgentsTestBase extends TestCase{
     private $customerAccountId = "Account201708082";
     private $customerUserId = "User123";
-
     protected $client;
 
     public function testGetCategories(){
@@ -46,7 +45,6 @@ class CloudAgentsTestBase extends TestCase{
         $this->assertObjectHasAttribute('description', $resp[0]);
     }
 
-    
     public function testSearchAgents(){
         $resp = $this->client->SearchAgents(null, null, "amazon");
         $this->assertInstanceOf(Entities\Agent::class, $resp[0]);
@@ -151,6 +149,20 @@ class CloudAgentsTestBase extends TestCase{
         $this->assertEquals($this->customerAccountId, $resp[0]->customerAccountId);
     }
 
+    public function testGetAdditionalAuthenticationDataByAccount(){
+        $resp = $this->client->GetSynchronizationAdditionalAuthDataByCustomerAccountId($this->customerAccountId);
+        $this->assertInstanceOf(Entities\AdditionalAuthData::class, $resp);
+    }
+
+    public function testUpdateAdditionalAuthenticationDataByAccount(){
+        $authData = new Entities\AdditionalAuthRequest();
+        $authData->accountId = $this->customerAccountId;
+        $authData->SbxSecretCode = '123456';
+        $resp = $this->client->UpdateSynchronizationAdditionalAuth($authData);
+        $this->assertInstanceOf(Entities\Synchronixation::class, $resp);
+        $this->assertEquals($this->customerAccountId, $resp->customerAccountId);  
+    }
+
     public function testSynchronizeUnexistingAccount(){
         $resp = $this->client->SynchronizeAccount('Account_Id', null, true);        
         $this->assertInstanceOf(Entities\Error::class, $resp);
@@ -208,6 +220,5 @@ class CloudAgentsTestBase extends TestCase{
     public function testDeleteAccount(){
         $resp = $this->client->DeleteAccount($this->customerAccountId);
         $this->assertEquals(true, $resp);    
-    }
-             
+    }      
 }
