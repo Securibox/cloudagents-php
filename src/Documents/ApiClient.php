@@ -319,7 +319,6 @@ class ApiClient
     public function GetSynchronizationAdditionalAuthDataByCustomerAccountId($accountId){
         $response = $this->httpClient->accounts()->$accountId()->mfa()->get();
         $jsonData = json_decode($response->body());
-        print_r($jsonData);
         if($response->statusCode() >= 400){
             return  Entities\Error::LoadFromJson($jsonData, $response->statusCode());
         }
