@@ -565,7 +565,7 @@ class ApiClient
             throw new Exception("You cannot set both failed and refused to true.");
         }
 
-        $response = $this->httpClient->documents()->$documentId()->ack()->put($documentId, $queryParams);
+        $response = $this->httpClient->documents()->$documentId()->ack()->put($queryParams);
         if($response->statusCode() == 200)
             return true;
 

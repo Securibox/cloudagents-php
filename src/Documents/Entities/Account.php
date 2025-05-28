@@ -44,7 +44,7 @@ class Account {
         $account->customerUserId = $jsonData->customerUserId;
         $account->name = $jsonData->name;
         $account->agentId = $jsonData->agentId;
-        $account->mode = Account::accountModeFromInt($jsonData->mode);
+        $account->mode = $jsonData->mode;
         $account->credentials = Credential::LoadFromJsonArray($jsonData->credentials);
         if(isset($jsonData->additionalAuthenticationData)){
             $account->additionalAuthenticationData = AdditionalAuthData::LoadFromJson($jsonData->additionalAuthenticationData);
@@ -61,21 +61,6 @@ class Account {
             array_push($objects, $object);
         }
         return $objects;
-    }
-    
-    private static function accountModeFromInt($intValue){
-        switch($intValue){
-            case 0:
-                return "Enabled";
-            case 1:
-                return "Disabled";
-            case 2:
-                return "NoAutomaticSynch";
-            case 3:
-                return "MfaAutoSynch";
-            default:
-                throw new \RuntimeException(sprintf('Unsupported accountMode code %d. Try to update SDK!', $intValue));                                                                          
-        }
     }
 }
 ?>
