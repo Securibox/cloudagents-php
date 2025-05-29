@@ -13,7 +13,7 @@ class CloudAgentsTestJwt extends CloudAgentsTestBase{
     protected function setUp() : void
     {
         parent::setUp();
-        $this->client = ApiClient::Jwt($this->privateKeyFilePath, $this->privateKeyPassPhrase, "https://sca-multitenant.securibox.eu/api/v1");
+        $this->client = ApiClient::Jwt($this->privateKeyFilePath, $this->privateKeyPassPhrase, "http://localhost:8080/api/v1");
 
     }
 }

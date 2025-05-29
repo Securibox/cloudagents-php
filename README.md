@@ -89,10 +89,10 @@ use Securibox\CloudAgents\Documents\Entities;
 
 //Configure account properties
 $account = new Entities\Account();
-$account->agentId = 'c42f0150d2eb47ee8fa56bce25e49b8d';
-$account->customerAccountId = 'Account201708082';
-$account->customerUserId = 'User123';
-$account->name = 'Test Account 1';
+$account->agentId = '93fddb673a2d4fb49406f21a5937dc90';
+$account->customerAccountId = 'UNITTESTS_PHP_SDK';
+$account->customerUserId = 'UNITTESTS_PHP_SDK_UID';
+$account->name = 'Test Account SDK 1';
 $account->credentials = array();
 
 //Configure credentials

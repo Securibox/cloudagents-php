@@ -7,8 +7,8 @@ use Securibox\CloudAgents\Documents\Entities;
 use PHPUnit\Framework\TestCase;
 
 class CloudAgentsTestBase extends TestCase{
-    private $customerAccountId = "TestAccountSdkPhp";
-    private $customerUserId = "UserSdkPhp";
+    private $customerAccountId = "UNITTESTS_PHP_SDK";
+    private $customerUserId = "UNITTESTS_PHP_SDK_UID";
     protected $client;
 
     public function testGetCategories(){
