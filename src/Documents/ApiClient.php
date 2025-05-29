@@ -27,7 +27,7 @@ class ApiClient
     *
     * @param string $username     basic username
     * @param array  $password     basic password
-    * @param string $apiEndpoint  the base url (e.g. https://sca-multitenant.securibox.eu/api/v1)
+    * @param string $apiEndpoint  the base url
     */
     public function __construct($httpHeaders, $curlOptions = null, $apiEndpoint){
         $this->httpClient = new Http\HttpClient($apiEndpoint, $httpHeaders, null, null, $curlOptions);
@@ -37,7 +37,7 @@ class ApiClient
     *
     * @param string $username     basic username
     * @param array  $password     basic password
-    * @param string $apiEndpoint  the base url (e.g. https://sca-multitenant.securibox.eu/api/v1)
+    * @param string $apiEndpoint  the base url
     */
     public static function AuthenticationBasic($username, $password, $apiEndpoint){
         $headers = ['Authorization: Basic '.base64_encode($username.':'.$password)];
@@ -50,7 +50,7 @@ class ApiClient
     *
     * @param string $certificateFile        certificate file path (PEM format)
     * @param array  $certificatePassword    PEM pass phrase
-    * @param string $apiEndpoint            the base url (e.g. https://sca-multitenant.securibox.eu/api/v1)
+    * @param string $apiEndpoint            the base url
     */
     public static function SslClientCertificate($certificateFile, $certificatePassword, $apiEndpoint){
         $curlOptions = array(
@@ -67,7 +67,7 @@ class ApiClient
     *
     * @param string $username     basic username
     * @param array  $password     basic password
-    * @param string $apiEndpoint  the base url (e.g. https://sca-multitenant.securibox.eu/api/v1)
+    * @param string $apiEndpoint  the base url
     */
     public static function Jwt($privateKey, $privateKeyPassPhrase, $apiEndpoint){
         $token = ApiClient::BuildJwt($privateKey, $privateKeyPassPhrase, $apiEndpoint);
@@ -81,7 +81,7 @@ class ApiClient
     * @param string $privateKey     private key file path or content
     * @param string  $privateKeyPassPhrase     private key file passphrase
     * @param string  $customerUserId     if used, an additional 'uid' claim is included in the token.    
-    * @param string $apiEndpoint  the base url (e.g. https://sca-multitenant.securibox.eu)    
+    * @param string $apiEndpoint  the base url 
     * This claim limits resource access to the ones owned by the specified user
     */
     public static function BuildJwt($privateKey, $privateKeyPassPhrase, $customerUserId = null, $apiEndpoint){

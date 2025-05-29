@@ -13,7 +13,7 @@ class CloudAgentsTestBasic extends CloudAgentsTestBase{
     protected function setUp() : void
     {
         parent::setUp();
-        $this->client = ApiClient::AuthenticationBasic($this->username, $this->password, "https://sca-multitenant.securibox.eu/api/v1");
+        $this->client = ApiClient::AuthenticationBasic($this->username, $this->password, "http://localhost:8080/api/v1");
 
     }
 }

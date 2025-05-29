@@ -7,8 +7,8 @@ use Securibox\CloudAgents\Documents\Entities;
 use PHPUnit\Framework\TestCase;
 
 class CloudAgentsTestBase extends TestCase{
-    private $customerAccountId = "Account201708082";
-    private $customerUserId = "User123";
+    private $customerAccountId = "TestAccountSdkPhp";
+    private $customerUserId = "UserSdkPhp";
     protected $client;
 
     public function testGetCategories(){
@@ -21,7 +21,7 @@ class CloudAgentsTestBase extends TestCase{
     }
 
     public function testGetSingleAgent(){
-        $resp = $this->client->GetAgent('d02a3ace21d6439eb9ff2b0138868eb8');
+        $resp = $this->client->GetAgent('93FDDB673A2D4FB49406F21A5937DC90');
         $this->assertInstanceOf(Entities\Agent::class, $resp);
         $this->assertObjectHasAttribute('id', $resp);
         $this->assertObjectHasAttribute('name', $resp);
@@ -38,7 +38,7 @@ class CloudAgentsTestBase extends TestCase{
     }
 
     public function testGetAgentByCategoryId(){
-        $resp = $this->client->GetAgentByCategoryId("f48e0f200113dc9b7dada22d7d2bf6988");
+        $resp = $this->client->GetAgentByCategoryId("e906d5d7b822a2087b2dacbd8e4f8379");
         $this->assertInstanceOf(Entities\Agent::class, $resp[0]);
         $this->assertObjectHasAttribute('id', $resp[0]);
         $this->assertObjectHasAttribute('name', $resp[0]);
@@ -72,7 +72,8 @@ class CloudAgentsTestBase extends TestCase{
         array_push($account->credentials, $username, $password);
         $resp = $this->client->CreateAccount($account);  
         $this->assertInstanceOf(Entities\Account::class, $resp);
-        $this->assertEquals($account->customerAccountId, $resp->customerAccountId);           
+        $this->assertEquals($account->customerAccountId, $resp->customerAccountId);
+        $this->assertEquals($account->customerUserId, $resp->customerUserId);           
     }
 
     public function testGetAllAccounts(){
