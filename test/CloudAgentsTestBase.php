@@ -7,9 +7,8 @@ use Securibox\CloudAgents\Documents\Entities;
 use PHPUnit\Framework\TestCase;
 
 class CloudAgentsTestBase extends TestCase{
-    private $customerAccountId = "Account201708082";
-    private $customerUserId = "User123";
-
+    private $customerAccountId = "UNITTESTS_PHP_SDK";
+    private $customerUserId = "UNITTESTS_PHP_SDK_UID";
     protected $client;
 
     public function testGetCategories(){
@@ -22,7 +21,7 @@ class CloudAgentsTestBase extends TestCase{
     }
 
     public function testGetSingleAgent(){
-        $resp = $this->client->GetAgent('d02a3ace21d6439eb9ff2b0138868eb8');
+        $resp = $this->client->GetAgent('93FDDB673A2D4FB49406F21A5937DC90');
         $this->assertInstanceOf(Entities\Agent::class, $resp);
         $this->assertObjectHasAttribute('id', $resp);
         $this->assertObjectHasAttribute('name', $resp);
@@ -39,14 +38,13 @@ class CloudAgentsTestBase extends TestCase{
     }
 
     public function testGetAgentByCategoryId(){
-        $resp = $this->client->GetAgentByCategoryId("f48e0f200113dc9b7dada22d7d2bf6988");
+        $resp = $this->client->GetAgentByCategoryId("e906d5d7b822a2087b2dacbd8e4f8379");
         $this->assertInstanceOf(Entities\Agent::class, $resp[0]);
         $this->assertObjectHasAttribute('id', $resp[0]);
         $this->assertObjectHasAttribute('name', $resp[0]);
         $this->assertObjectHasAttribute('description', $resp[0]);
     }
 
-    
     public function testSearchAgents(){
         $resp = $this->client->SearchAgents(null, null, "amazon");
         $this->assertInstanceOf(Entities\Agent::class, $resp[0]);
@@ -74,7 +72,8 @@ class CloudAgentsTestBase extends TestCase{
         array_push($account->credentials, $username, $password);
         $resp = $this->client->CreateAccount($account);  
         $this->assertInstanceOf(Entities\Account::class, $resp);
-        $this->assertEquals($account->customerAccountId, $resp->customerAccountId);           
+        $this->assertEquals($account->customerAccountId, $resp->customerAccountId);
+        $this->assertEquals($account->customerUserId, $resp->customerUserId);           
     }
 
     public function testGetAllAccounts(){
@@ -151,6 +150,20 @@ class CloudAgentsTestBase extends TestCase{
         $this->assertEquals($this->customerAccountId, $resp[0]->customerAccountId);
     }
 
+    public function testGetAdditionalAuthenticationDataByAccount(){
+        $resp = $this->client->GetSynchronizationAdditionalAuthDataByCustomerAccountId($this->customerAccountId);
+        $this->assertInstanceOf(Entities\AdditionalAuthData::class, $resp);
+    }
+
+    public function testUpdateAdditionalAuthenticationDataByAccount(){
+        $authData = new Entities\AdditionalAuthRequest();
+        $authData->accountId = $this->customerAccountId;
+        $authData->SbxSecretCode = '123456';
+        $resp = $this->client->UpdateSynchronizationAdditionalAuth($authData);
+        $this->assertInstanceOf(Entities\Synchronixation::class, $resp);
+        $this->assertEquals($this->customerAccountId, $resp->customerAccountId);  
+    }
+
     public function testSynchronizeUnexistingAccount(){
         $resp = $this->client->SynchronizeAccount('Account_Id', null, true);        
         $this->assertInstanceOf(Entities\Error::class, $resp);
@@ -185,12 +198,18 @@ class CloudAgentsTestBase extends TestCase{
     }
 
     public function testAcknowledgeDocumentDelivery(){
-        $resp = $this->client->GetDocumentsByAccount($this->customerAccountId);
-        if(sizeof($resp) == 0){
-            $this->assertEmpty($resp);
+        $respDoc = $this->client->GetDocumentsByAccount($this->customerAccountId);
+        if(sizeof($respDoc) == 0){
+            $this->assertEmpty($respDoc);
             return;
         }
-        $resp = $this->client->AcknowledgeDocumentDelivery(strval($resp[0]->id));
+        $resp = $this->client->AcknowledgeDocumentDelivery(strval($respDoc[0]->id));
+        $this->assertEquals(true, $resp);
+
+         $resp = $this->client->AcknowledgeDocumentDelivery(strval($respDoc[1]->id), refused: true);
+        $this->assertEquals(true, $resp);
+
+         $resp = $this->client->AcknowledgeDocumentDelivery(strval($respDoc[2]->id), failed: true);
         $this->assertEquals(true, $resp);
     }
 
@@ -202,6 +221,5 @@ class CloudAgentsTestBase extends TestCase{
     public function testDeleteAccount(){
         $resp = $this->client->DeleteAccount($this->customerAccountId);
         $this->assertEquals(true, $resp);    
-    }
-             
+    }      
 }

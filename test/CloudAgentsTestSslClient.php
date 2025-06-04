@@ -13,7 +13,7 @@ class CloudAgentsTestSslClient extends CloudAgentsTestBase{
     protected function setUp() : void
     {
         parent::setUp();
-        $this->client = ApiClient::SslClientCertificate($this->certificateFilePath, $this->certificateSecret, "https://sca-multitenant.securibox.eu/api/v1");
+        $this->client = ApiClient::SslClientCertificate($this->certificateFilePath, $this->certificateSecret, "http://localhost:8080/api/v1");
 
     }      
 }

@@ -49,6 +49,7 @@ class Document {
 
     /** @var string The document phase within the handling process (ToParse, ToDeliver, Packaged, Delivered, Acknowledged, AcknowledgementFailed, DeliveryFailed, Completed). */
     public $documentProcessPhase; 
+    
 
     /** @var int32 The document size in bytes. */
     public $size;
@@ -62,7 +63,7 @@ class Document {
     /** @var string The document content base64 enconded. */
     public $base64Content;
 
-     public static function LoadFromJson($jsonData){
+    public static function LoadFromJson($jsonData){
         $obj = new Document();
         $obj->id = $jsonData->id;
         $obj->name = $jsonData->name;
@@ -74,7 +75,7 @@ class Document {
         $obj->metadatas = $jsonData->metadatas;
         $obj->uniqueIdentifier = $jsonData->uniqueIdentifier;
         $obj->uniqueIdentifierHash = $jsonData->uniqueIdentifierHash;
-        $obj->documentProcessPhase = $jsonData->documentProcessPhase;
+        $obj->documentProcessPhase = Document::documentProcessPhaseFromInt($jsonData->documentProcessPhase);
         $obj->size = (int)$jsonData->size;
         $obj->deliveryDate = new \DateTime($jsonData->deliveryDate);
         $obj->acknowledgementDate = new \DateTime($jsonData->acknowledgementDate);
@@ -88,7 +89,35 @@ class Document {
             $object = Document::LoadFromJson($jsonObjects[$i]);
             array_push($objects, $object);
         }
+        
         return $objects;
-    }   
+    }
+
+    private static function documentProcessPhaseFromInt($intValue){
+        switch($intValue){
+            case 0:
+                return 'ToParse';
+            case 1:
+                return 'ToDeliver';
+            case 2:
+                return 'Packaged';
+            case 3:
+                return 'Delivered';
+            case 4:
+                return 'Acknowledged';
+            case 5:
+                return 'AcknowledgementFailed';
+            case 6:
+                return 'DeliveryFailed';
+            case 7:
+                return 'Holding';
+            case 8:
+                return 'Parsing';
+            case 9:
+                return 'ToPack';
+            default:
+                throw new \RuntimeException(sprintf('Unsupported documentProcessPhase code %d. Try to update SDK!', $intValue));                                                                          
+        }
+    }
 }
 ?>

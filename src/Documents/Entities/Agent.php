@@ -112,17 +112,18 @@ class Agent {
             case 2:
                 return "Unavailable";  
             case 3:
-                return "Zombie";                                                                                  
+                return "Zombie"; 
+            default:
+                throw new \RuntimeException(sprintf('Unsupported currentState code %d. Try to update SDK!', $intValue));                                                                                
         }
     }
-
 
     private static function periodicityFromInt($intValue){
         switch($intValue){
             case 0:
-                return "Undefined";
+                return "HardWeekly";
             case 1:
-                return "None";            
+                return "HardMonthly";            
             case 2:
                 return "Daily";  
             case 3:
@@ -138,9 +139,20 @@ class Agent {
             case 8:
                 return "Sixmonthly";
             case 9:
-                return "Yearly";                                                     
+                return "Yearly";
+            case 10:
+                return "HardBiweekly";
+            case 11:
+                return "HardBimonthly";
+            case 12:
+                return "HardTrimonthly";
+            case 13:
+                return "HardSixmonthly";
+            case 14:
+                return "HardYearly";
+            default:
+                throw new \RuntimeException(sprintf('Unsupported periodicity code %d. Try to update SDK!', $intValue));                                                      
         }
     }
-
 }
 ?>
